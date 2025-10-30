@@ -1,0 +1,6 @@
+flask               # For Flask Server
+flask-socketio      # For Flask Server
+eventlet            # Required for Flask-SocketIO to work properly
+pytest              # Testing module
+requests
+scikit-learn
