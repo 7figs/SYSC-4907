@@ -1,26 +1,27 @@
 {% extends "base.html" %}
-{% block title %}Start{% endblock %}
+{% block title %}Dislike Selection{% endblock %}
 {% block links %}
     <link rel="stylesheet" href="../static/css/cold_start.css">
 {% endblock %}
 {% block content %}
     <div class="cold-start-container">
-        <h1>Tell Us Your Movie Preferences</h1>
-        <p>Help us understand your taste! Select the movies you like:</p>
-        
-        <form id="movieForm">
-            <div class="movies-grid">
-                <!-- JS will populate movie cards here -->
+        <h1>Which of these movies do you dislike?</h1>
+        <p>Pick movies you don't like from this random set</p>
+
+        <form id="dislikeForm">
+            <div id="dislikesGrid" class="movies-grid">
+                <!-- JS will populate random movie cards here -->
             </div>
 
-            <div style="display: flex; gap:12px; justify-content: center; margin-top:16px">
-                <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
-                <button type="submit" class="submit-btn">Save & Continue</button>
+            <div style="display:flex;gap:12px;justify-content:center;margin-top:16px">
+                <button type = "button" id = "backBtn" class = "back-btn">Back</button>
+                <button type="submit" class="submit-btn">Save Dislikes & Finish</button>
             </div>
         </form>
     </div>
 
     <script>
+        //We will need to sample a random set of movies from a master list and display them here (this is just a starting point)
         const MASTER_MOVIES = [
             { title: "The Shawshank Redemption", img: "../static/images/Shawshank.jpg" },
             { title: "The Godfather", img: "../static/images/Godfather.jpg" },
@@ -34,6 +35,15 @@
             { title: "The Lord of the Rings: The Fellowship of the Ring", img: "../static/images/lotrfotr.jpg" }
         ];
 
+        function sampleMovies(count = 10) {
+            const pool = MASTER_MOVIES.slice();
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+            return pool.slice(0, Math.min(count, pool.length));
+        }
+
         function createCard(movie) {
             const label = document.createElement('label');
             label.className = 'movie-item';
@@ -41,7 +51,7 @@
             label.innerHTML = `
                 <img src="${movie.img}" alt="${movie.title}">
                 <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
-                    <input type="checkbox" name="movies" value="${movie.title}">
+                    <input type="checkbox" name="dislikes" value="${movie.title}">
                     <span>${movie.title}</span>
                 </div>
             `;
@@ -49,22 +59,23 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const grid = document.querySelector('.movies-grid');
-            MASTER_MOVIES.forEach(m => grid.appendChild(createCard(m)));
+            const grid = document.getElementById('dislikesGrid');
+            const sample = sampleMovies(10);
+            sample.forEach(m => grid.appendChild(createCard(m)));
 
-            const form = document.getElementById('movieForm');
-            const cancel = document.getElementById('cancelBtn');
-
-            if (cancel) {
-                cancel.addEventListener('click', () => {
-                    window.location.href = '/';
+            const backBtn = document.getElementById('backBtn');
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    window.location.href = '/start';
                 });
             }
 
+            const form = document.getElementById('dislikeForm');
             if (form) {
                 form.addEventListener('submit', (e) => {
                     e.preventDefault();
-                    window.location.href = '/cold_dislike';
+                    // No JSON/localStorage saving — just finish flow
+                    window.location.href = '/choose_account';
                 });
             }
         });
