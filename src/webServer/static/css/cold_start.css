@@ -1,24 +1,116 @@
-.cold-start-container {
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
+.panel {
+    width: 80vw;
+    min-height: 75vh;
+    padding: 5vh 5vw;
+    margin-left: 5vw;
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+    border-radius: 25px;
+    box-shadow: 0 0 10px var(--dark-font-color);
+    display: grid;
+    grid: 10% 70% 10% / 100%;
+    row-gap: 20px;
 }
 
-.cold-start-container h1 {
+.panel h1 {
     text-align: center;
-    color: #333;
-    margin-bottom: 10px;
 }
 
-.cold-start-container p {
+.panel p {
     text-align: center;
-    color: #666;
-    margin-bottom: 30px;
-    font-size: 16px;
+}
+
+.input-field {
+    width: 25%;
+    justify-self: center;
+    background-color: var(--dark-bg-color);
+    border: 1px solid var(--dark-font-color);
+    color: var(--dark-font-color);
+    padding: 5px;
+    border-radius: 5px;
+    height: 35px;
+}
+
+.panel-button-group {
+    display: grid;
+    grid: 100% / 50% 50%;
+    column-gap: 20px;
+    align-items: center;
+}
+
+.panel-button-link {
+    min-width: 20%;
+    justify-self: center;
+}
+
+.panel-button {
+    min-width: 20%;
+    justify-self: center;
+    border-radius: 5px;
+    border: none;
+    padding: 10px 18px;
+    color: var(--dark-font-color);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.cancel-btn {
+    background: var(--danger-color);
+}
+
+.back-btn {
+    background: var(--alt-color);
+}
+
+.submit-btn {
+    background: var(--primary-color);
+}
+
+.submit-btn:hover {
+    background: var(--primary-hover-color);
 }
 
 .movies-grid {
+    display: grid;
+    grid: auto / 20% 20% 20% 20%;
+    column-gap: 5%;
+    row-gap: 5%;
+    margin-left: 5%;
+}
+
+.card {
+    width: 100%;
+    border-radius: 25px;
+    border: 1px solid var(--dark-font-color);
+    overflow: hidden;
+    display: grid;
+    grid: 90% 10% / 100%;
+    cursor: pointer;
+}
+
+.card:hover {
+    box-shadow: 0 0 10px var(--dark-font-color);
+}
+
+.card img {
+    width: 100%;
+}
+
+.card p {
+    opacity: 100%;
+    background-color: var(--dark-bg-color);
+    z-index: 1;
+}
+
+.card-not-selected {
+    opacity: 50%;
+}
+
+.card-selected {
+    box-shadow: 0 0 10px var(--dark-font-color);
+}
+
+/* .movies-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
@@ -85,7 +177,6 @@
     cursor: pointer;
     margin-right: 8px;
 
-    /* enable smooth scaling */
     transition: transform 150ms ease, opacity 150ms ease, background-color 150ms ease;
     transform-origin: center center;
 }
@@ -95,7 +186,7 @@
     background: #005a9f;
     transform: scale(1.08);
     opacity: 0.95;
-}
+} */
 
 
 

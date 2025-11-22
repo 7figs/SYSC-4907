@@ -4,23 +4,72 @@
     <link rel="stylesheet" href="../static/css/cold_start.css">
 {% endblock %}
 {% block content %}
-    <div class="cold-start-container">
-        <h1>Tell Us Your Movie Preferences</h1>
-        <p>Help us understand your taste! Select the movies you like:</p>
-        
-        <form id="movieForm">
-            <div class="movies-grid">
-                <!-- JS will populate movie cards here -->
+    <div class="panel">
+        <label for="name"><h1>What Is Your Name?</h1></label>
+        <input id="name" type="text" class="input-field">
+        <div class="panel-button-group">
+            <button onclick="window.location.href='/'" class="panel-button cancel-btn">Cancel</button>
+            <button class="panel-button submit-btn">Next &#8594;</button>
+        </div>
+    </div>
+    <div class="hidden panel">
+        <div>
+            <h1>Tell Us Your Movie Preferences</h1>
+            <p>Help us understand your taste! Select the movies you like:</p>
+        </div>
+        <div class="movies-grid like">
+            <div class="card">
+                <img class="card-not-selected" src="../static/images/portrait/thegodfatherpart2.jpg" alt="">
+                <p>The Godfather Part 2</p>
             </div>
-
-            <div style="display: flex; gap:12px; justify-content: center; margin-top:16px">
-                <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
-                <button type="submit" class="submit-btn">Save & Continue</button>
+            <div class="card">
+                <img class="card-not-selected" src="../static/images/portrait/shawshankredemption.jpg" alt="">
+                <p>Shawshank Redemption</p>
             </div>
-        </form>
+            <div class="card">
+                <img class="card-not-selected" src="../static/images/portrait/thedarkknight.jpg" alt="">
+                <p>The Dark Knight</p>
+            </div>
+            <div class="card">
+                <img class="card-not-selected" src="../static/images/portrait/schindlerslist.jpg" alt="">
+                <p>Schindler's List</p>
+            </div>
+            <div class="card">
+                <img class="card-not-selected" src="../static/images/portrait/12angrymen.jpg" alt="">
+                <p>12 Angry Men</p>
+            </div>
+        </div>
+        <div class="panel-button-group">
+            <button type="button" class="panel-button back-btn">&#8592; Back</button>
+            <button class="panel-button submit-btn">Next &#8594;</button>
+        </div>
+    </div>
+    <div class="hidden panel">
+        <div>
+            <h1>Tell Us Your Movie Preferences</h1>
+            <p>Help us understand your taste! Select the movies you dislike:</p>
+        </div>
+        <div class="movies-grid dislike">
+            <div class="card">
+                <img class="card-not-selected" src="../static/images/portrait/thegodfather.jpg" alt="">
+                <p>The Godfather</p>
+            </div>
+            <div class="card">
+                <img class="card-not-selected" src="../static/images/portrait/schindlerslist.jpg" alt="">
+                <p>Schindler's List</p>
+            </div>
+            <div class="card">
+                <img class="card-not-selected" src="../static/images/portrait/12angrymen.jpg" alt="">
+                <p>12 Angry Men</p>
+            </div>
+        </div>
+        <div class="panel-button-group">
+            <button type="button" class="panel-button back-btn">&#8592; Back</button>
+            <button class="panel-button submit-btn">Create Profile</button>
+        </div>
     </div>
 
-    <script>
+    <!-- <script>
         const MASTER_MOVIES = [
             { title: "The Shawshank Redemption", img: "../static/images/Shawshank.jpg" },
             { title: "The Godfather", img: "../static/images/Godfather.jpg" },
@@ -68,5 +117,8 @@
                 });
             }
         });
-    </script>
+    </script> -->
+{% endblock %}
+{% block scripts %}
+    <script src="../static/js/cold_start.js"></script>
 {% endblock %}

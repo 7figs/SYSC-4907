@@ -14,13 +14,9 @@ def coldStart():
 def chooseAccount():
     return render_template("chooseAccount.html")
 
-@app.route("/load_store_delete")
+@app.route("/settings")
 def loadStoreDelete():
-    return render_template("load_store.html")
-
-@app.route("/cold_dislike")
-def coldDislike():
-    return render_template("coldDislike.html")
+    return render_template("settings.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
