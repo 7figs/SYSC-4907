@@ -68,56 +68,6 @@
             <button class="panel-button submit-btn">Create Profile</button>
         </div>
     </div>
-
-    <!-- <script>
-        const MASTER_MOVIES = [
-            { title: "The Shawshank Redemption", img: "../static/images/Shawshank.jpg" },
-            { title: "The Godfather", img: "../static/images/Godfather.jpg" },
-            { title: "Inception", img: "../static/images/Inception.jpg" },
-            { title: "The Dark Knight", img: "../static/images/DarkKnight.jpg" },
-            { title: "Pulp Fiction", img: "../static/images/Pulpfiction.jpg" },
-            { title: "Forrest Gump", img: "../static/images/ForestGump.jpg" },
-            { title: "Fight Club", img: "../static/images/fightclub.jpg" },
-            { title: "The Matrix", img: "../static/images/TheMatrix.png" },
-            { title: "Interstellar", img: "../static/images/Interstellar.jpg" },
-            { title: "The Lord of the Rings: The Fellowship of the Ring", img: "../static/images/lotrfotr.jpg" }
-        ];
-
-        function createCard(movie) {
-            const label = document.createElement('label');
-            label.className = 'movie-item';
-            label.style.flexDirection = 'column';
-            label.innerHTML = `
-                <img src="${movie.img}" alt="${movie.title}">
-                <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
-                    <input type="checkbox" name="movies" value="${movie.title}">
-                    <span>${movie.title}</span>
-                </div>
-            `;
-            return label;
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const grid = document.querySelector('.movies-grid');
-            MASTER_MOVIES.forEach(m => grid.appendChild(createCard(m)));
-
-            const form = document.getElementById('movieForm');
-            const cancel = document.getElementById('cancelBtn');
-
-            if (cancel) {
-                cancel.addEventListener('click', () => {
-                    window.location.href = '/';
-                });
-            }
-
-            if (form) {
-                form.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    window.location.href = '/cold_dislike';
-                });
-            }
-        });
-    </script> -->
 {% endblock %}
 {% block scripts %}
     <script src="../static/js/cold_start.js"></script>
