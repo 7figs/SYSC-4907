@@ -2,11 +2,15 @@ import sqlite3
 import pandas as pd
 import ast
 from collections import Counter
+import sys
+import os
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, parent_dir)
+import const
 
 movies_path = "tmdb_5000_movies.csv"
 credits_path = "tmdb_5000_credits.csv"
-db_path = "../db.db"
-table_name = "movies"
+db_path = const.DB_PATH
 
 movies = pd.read_csv(movies_path)
 credits = pd.read_csv(credits_path)
@@ -99,16 +103,20 @@ final_df.to_csv(output_path, index=False)
 print(f"Saved {len(final_df)} rows with {len(final_df.columns)} columns to {output_path}")
 print(final_df.head())
 
+df = pd.read_csv(output_path)
+df.columns = df.columns.str.replace(".", "", regex=False)
+df.to_csv(output_path, index=False)
+
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
-delete_query = f"DELETE FROM {table_name};"
+delete_query = f"DELETE FROM {const.MOVIES_TABLE};"
 cursor.execute(delete_query)
 conn.commit()
 conn.close()
 
 df = pd.read_csv(output_path)
 conn = sqlite3.connect(db_path)
-df.to_sql(table_name, conn, if_exists="replace", index=False)
+df.to_sql(const.MOVIES_TABLE, conn, if_exists="replace", index=False)
 conn.commit()
 conn.close()
