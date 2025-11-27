@@ -4,3 +4,5 @@ eventlet            # Required for Flask-SocketIO to work properly
 pytest              # Testing module
 requests
 scikit-learn
+pandas
+numpy

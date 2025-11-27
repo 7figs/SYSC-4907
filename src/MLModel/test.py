@@ -1,17 +1,34 @@
 import matplotlib.pyplot as plt
 from sklearn import tree
 import pickle
+import sqlite3
+import sys
+import os
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, parent_dir)
+import const
 
 FEATURES = [
-    "isAction",
-    "isComedy",
-    "isDrama",
-    "isHorror",
-    "isScifi",
-    "isRomance",
-    "isFantasy",
-    "isAnimation",
-    "isAdventure"
+    "release_year",
+    "actor_Samuel_L_Jackson",
+    "actor_Morgan_Freeman",
+    "actor_John_Ratzenberger",
+    "actor_Tom_Hanks",
+    "actor_Robert_De_Niro",
+    "actor_Harrison_Ford",
+    "actor_Leonardo_DiCaprio",
+    "actor_Brad_Pitt",
+    "actor_Christain_Bale",
+    "genre_Drama",
+    "genre_Comedy",
+    "genre_Romance",
+    "genre_Thriller",
+    "genre_Adventure",
+    "genre_Action",
+    "genre_Crime",
+    "genre_Family",
+    "genre_Science_Fiction",
+    "genre_Fantasy"
 ]
 
 CLASSES = [
@@ -19,43 +36,99 @@ CLASSES = [
     "Recommend"
 ]
 
-# Feature order: [isAction, isComedy, isDrama, isHorror, isScifi, isRomance, isFantasy, isAnimation, isAdventure]
-X = [
-    [0, 0, 1, 0, 0, 0, 0, 0, 0], # Citizen Kane
-    [0, 0, 1, 0, 0, 1, 0, 0, 0], # Cassablanca
-    [1, 0, 1, 0, 0, 0, 0, 0, 0], # The Godfather
-    [0, 0, 1, 0, 0, 0, 0, 0, 0], # Raging Bull
-    [0, 1, 0, 0, 0, 1, 0, 0, 0], # Singin' in the Rain
-    [0, 0, 1, 0, 0, 1, 0, 0, 0], # Gone with the wind
-    [0, 0, 1, 0, 0, 0, 0, 0, 1], # Larence of Arabia
-    [0, 0, 1, 0, 0, 0, 0, 0, 0], # Schindler's List
-    [0, 0, 1, 1, 0, 1, 0, 0, 0], # Vertigo
-    [0, 0, 0, 0, 0, 0, 1, 0, 1], # Wizard of Oz
-    [0, 1, 1, 0, 0, 1, 0, 0, 0], # City Lights
-    [1, 0, 1, 0, 0, 0, 0, 0, 1], # The Searchers
-    [1, 0, 0, 0, 1, 0, 1, 0, 1], # Star Wars: A New Hope
-    [0, 0, 0, 1, 0, 0, 0, 0, 0], # Psycho
-    [0, 0, 1, 0, 1, 0, 0, 0, 1], # 2001: A Space Odyssey
-    [0, 0, 1, 0, 0, 0, 0, 0, 0], # Sunset Boulevard
-    [0, 1, 1, 0, 0, 1, 0, 0, 0], # The Graduate
-    [1, 1, 0, 0, 0, 0, 0, 0, 1], # The General
-    [0, 0, 1, 0, 0, 0, 0, 0, 0], # On the Waterfront
-    [0, 0, 1, 0, 0, 0, 1, 0, 0], # It's a Wonderful Life
-    [0, 0, 1, 1, 0, 0, 0, 0, 0], # Cinatown
-    [0, 1, 0, 0, 0, 1, 0, 0, 0], # Some Like It Hot
-    [0, 0, 1, 0, 0, 0, 0, 0, 0], # The Grapes of Wrath
-    [0, 0, 0, 0, 1, 0, 0, 0, 1], # E.T. the Extra-Terrestrial
-    [0, 0, 1, 0, 0, 0, 0, 0, 0]  # To Kill a Mockingbird
-]
-Y = [1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1]
+
+# Feature order: [
+# release_year, 
+# actor_Samuel_L_Jackson, 
+# actor_Morgan_Freeman, 
+# actor_John_Ratzenberger, 
+# actor_Tom_Hanks, 
+# actor_Robert_De_Niro, 
+# actor_Harrison_Ford, 
+# actor_Leonardo_DiCaprio, 
+# actor_Brad_Pitt, 
+# actor_Christain_Bale, 
+# genre_Drama, 
+# genre_Comedy, 
+# genre_Romance, 
+# genre_Thriller, 
+# genre_Adventure, 
+# genre_Action, 
+# genre_Crime, 
+# genre_Family, 
+# genre_Science_Fiction, 
+# genre_Fantasy
+# ]
+X = []
+Y = []
+test_samples = []
+
+conn = sqlite3.connect(const.DB_PATH)
+cursor = conn.cursor()
+cursor.execute(f"SELECT * FROM {const.MOVIES_TABLE} WHERE title == 'The Godfather'")
+test = cursor.fetchall()
+X.append(list(test[0][-21:]))
+Y.append(1)
+
+cursor.execute(f"SELECT * FROM {const.MOVIES_TABLE} WHERE title == 'The Godfather: Part II'")
+test = cursor.fetchall()
+X.append(list(test[0][-21:]))
+Y.append(1)
+
+cursor.execute(f"SELECT * FROM {const.MOVIES_TABLE} WHERE title == 'GoodFellas'")
+test = cursor.fetchall()
+X.append(list(test[0][-21:]))
+Y.append(1)
+
+cursor.execute(f"SELECT * FROM {const.MOVIES_TABLE} WHERE title == 'The Shawshank Redemption'")
+test = cursor.fetchall()
+X.append(list(test[0][-21:]))
+Y.append(1)
+
+cursor.execute(f"SELECT * FROM {const.MOVIES_TABLE} WHERE title == 'The Good, the Bad and the Ugly'")
+test = cursor.fetchall()
+X.append(list(test[0][-21:]))
+Y.append(1)
+
+cursor.execute(f"SELECT * FROM {const.MOVIES_TABLE} WHERE title == 'Spirited Away'")
+test = cursor.fetchall()
+X.append(list(test[0][-21:]))
+Y.append(0)
+
+cursor.execute(f"SELECT * FROM {const.MOVIES_TABLE} WHERE title == 'Star Wars'")
+test = cursor.fetchall()
+X.append(list(test[0][-21:]))
+Y.append(0)
+
+cursor.execute(f"SELECT * FROM {const.MOVIES_TABLE} WHERE title == 'Inside Out'")
+test = cursor.fetchall()
+X.append(list(test[0][-21:]))
+Y.append(0)
+
+cursor.execute(f"SELECT * FROM {const.MOVIES_TABLE} WHERE title == 'The Matrix'")
+test = cursor.fetchall()
+X.append(list(test[0][-21:]))
+Y.append(0)
+
+cursor.execute(f"SELECT * FROM {const.MOVIES_TABLE} WHERE title == 'Furious 7'")
+test = cursor.fetchall()
+X.append(list(test[0][-21:]))
+Y.append(0)
+
+cursor.execute(f"SELECT * FROM {const.MOVIES_TABLE} WHERE title == 'Pulp Fiction'")
+test = cursor.fetchall()[0]
+test_samples.append(list(test[-21:]))
+
+cursor.execute(f"SELECT * FROM {const.MOVIES_TABLE} WHERE title == 'Big Hero 6'")
+test = cursor.fetchall()
+test_samples.append(list(test[0][-21:]))
+conn.close()
+
 clf = tree.DecisionTreeClassifier(random_state=42)
 clf = clf.fit(X, Y)
 test = pickle.dumps(clf)
 clf = pickle.loads(test)
-print(clf.predict([
-    [1, 0, 1, 1, 0, 0, 0, 0, 0], # Pulp Fiction
-    [0, 1, 0, 0, 0, 0, 0, 1, 1] # Toy Story
-]))
+print(clf.predict(test_samples))
 
 fig = plt.figure(figsize=(10, 8))
 tree.plot_tree(clf, impurity=False, filled=True, feature_names=FEATURES, class_names=CLASSES)

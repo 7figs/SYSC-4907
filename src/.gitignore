@@ -1,1 +1,4 @@
 venv/
+**/*Zone.Identifier
+MLModel/*.csv
+__pycache__/
