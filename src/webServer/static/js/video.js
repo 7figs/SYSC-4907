@@ -3,12 +3,19 @@ const video = document.getElementById("video");
 // Dynamically build the URL based on browser address
 const hostname = window.location.hostname;  // example: 192.168.2.27
 const port = window.location.port || 8000;  // fallback if no port visible
-const src = "http://172.17.52.25:8000/stream.m3u8";
+const src = "http://142.112.252.221:50000/stream.m3u8";
 
 console.log("Using dynamic video source:", src);
 
 if (Hls.isSupported()) {
-    const hls = new Hls();
+    const hls = new Hls(
+        {
+            maxBufferLength: 100,
+            liveMaxLatencyDuration: 10,
+            backBufferLength: 30,
+            liveSyncDuration: 3
+        }
+    );
     hls.loadSource(src);
     hls.attachMedia(video);
 } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
