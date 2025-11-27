@@ -18,5 +18,9 @@ def chooseAccount():
 def loadStoreDelete():
     return render_template("settings.html")
 
+@app.route("/video")
+def video():
+    return render_template("video.html")
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=8000)

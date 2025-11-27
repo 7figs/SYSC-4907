@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Video{% endblock %}
+{% block links %}
+    <link rel="stylesheet" href="../static/css/video.css">
+{% endblock %}
+{% block content %}
+    <h2>Local Network Video Stream</h2>
+    <div class="video-container">
+        <video id="video" class="rounded-corner" controls autoplay></video>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="../static/js/video.js"></script>
+{% endblock %}
