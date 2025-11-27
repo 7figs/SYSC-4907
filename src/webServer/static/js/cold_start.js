@@ -3,6 +3,23 @@ let num_panels = panels.length;
 let next_buttons = [];
 let like_grid = document.querySelectorAll(".like")[0].children;
 let dislike_grid = document.querySelectorAll(".dislike")[0].children;
+let movies = JSON.parse(localStorage.getItem("movies"));
+let random_like = [];
+let random_dislike = [];
+
+for(let i = 0; i < 12; i++) {
+    random_like.push(movies[Math.floor(Math.random() * movies.length)]);
+}
+for(let i = 0; i < 12; i++) {
+    let index = Math.floor(Math.random() * movies.length);
+    if (!(index in random_like)){
+        random_dislike.push(movies[index]);
+    }
+    else {
+        i--;
+    }
+}
+
 
 for (let i = 0; i < num_panels; i++) {
     panels[i].id = i;
