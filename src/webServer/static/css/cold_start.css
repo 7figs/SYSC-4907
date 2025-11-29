@@ -97,9 +97,14 @@
 }
 
 .card p {
+    padding: 0 5px;
+    text-align: center;
     opacity: 100%;
     background-color: var(--dark-bg-color);
     z-index: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .card-not-selected {

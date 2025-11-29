@@ -17,28 +17,7 @@
             <h1>Tell Us Your Movie Preferences</h1>
             <p>Help us understand your taste! Select the movies you like:</p>
         </div>
-        <div class="movies-grid like">
-            <div class="card">
-                <img class="card-not-selected" src="../static/images/portrait/thegodfatherpart2.jpg" alt="">
-                <p>The Godfather Part 2</p>
-            </div>
-            <div class="card">
-                <img class="card-not-selected" src="../static/images/portrait/shawshankredemption.jpg" alt="">
-                <p>Shawshank Redemption</p>
-            </div>
-            <div class="card">
-                <img class="card-not-selected" src="../static/images/portrait/thedarkknight.jpg" alt="">
-                <p>The Dark Knight</p>
-            </div>
-            <div class="card">
-                <img class="card-not-selected" src="../static/images/portrait/schindlerslist.jpg" alt="">
-                <p>Schindler's List</p>
-            </div>
-            <div class="card">
-                <img class="card-not-selected" src="../static/images/portrait/12angrymen.jpg" alt="">
-                <p>12 Angry Men</p>
-            </div>
-        </div>
+        <div class="movies-grid like"></div>
         <div class="panel-button-group">
             <button type="button" class="panel-button back-btn">&#8592; Back</button>
             <button class="panel-button submit-btn">Next &#8594;</button>
@@ -49,26 +28,14 @@
             <h1>Tell Us Your Movie Preferences</h1>
             <p>Help us understand your taste! Select the movies you dislike:</p>
         </div>
-        <div class="movies-grid dislike">
-            <div class="card">
-                <img class="card-not-selected" src="../static/images/portrait/thegodfather.jpg" alt="">
-                <p>The Godfather</p>
-            </div>
-            <div class="card">
-                <img class="card-not-selected" src="../static/images/portrait/schindlerslist.jpg" alt="">
-                <p>Schindler's List</p>
-            </div>
-            <div class="card">
-                <img class="card-not-selected" src="../static/images/portrait/12angrymen.jpg" alt="">
-                <p>12 Angry Men</p>
-            </div>
-        </div>
+        <div class="movies-grid dislike"></div>
         <div class="panel-button-group">
             <button type="button" class="panel-button back-btn">&#8592; Back</button>
-            <button class="panel-button submit-btn">Create Profile</button>
+            <button id="create-profile" class="panel-button submit-btn">Create Profile</button>
         </div>
     </div>
+    <div id="toast" class="toast"></div>
 {% endblock %}
 {% block scripts %}
-    <script src="../static/js/cold_start.js"></script>
+    <script type="module" src="../static/js/cold_start.js"></script>
 {% endblock %}

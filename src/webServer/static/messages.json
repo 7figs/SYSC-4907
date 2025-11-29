@@ -1,0 +1,4 @@
+{
+    "cold_start_success": "&#10003; Success. Profile Created",
+    "cold_start_fail": "&#10005; Error. Please Provide a Username"
+}

@@ -1,10 +1,14 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 import sqlite3
+import json
 import sys
 import os
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+target_dir = os.path.abspath(os.path.join("../MLModel"))
 sys.path.insert(0, parent_dir)
 import const
+sys.path.insert(0, target_dir)
+import createTree as ml
 
 app = Flask(__name__)
 
@@ -29,20 +33,26 @@ def video():
     return render_template("video.html")
 
 """
-endpoints
+Endpoints
 """
 @app.route("/movies", methods=["GET"])
 def getMovies():
     conn = sqlite3.connect(const.DB_PATH)
     cursor = conn.cursor()
-    cursor.execute(f"SELECT title,overview FROM {const.MOVIES_TABLE}")
+    cursor.execute(f"SELECT title, overview FROM {const.MOVIES_TABLE}")
     movies = cursor.fetchall()
+    conn.close()
     return movies
 
 @app.route("/tree", methods=["GET"])
 def createTree():
-    like = request.args.get("l")
-    dislike = request.args.get("d")
+    like = (request.args.get("l"))
+    dislike = (request.args.get("d"))
+    like = json.loads(like)
+    dislike = json.loads(dislike)
+    tree = ml.createTree(like, dislike)
+    print(tree)
+    return tree
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8000)

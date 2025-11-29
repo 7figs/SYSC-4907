@@ -2,3 +2,4 @@ venv/
 **/*Zone.Identifier
 MLModel/*.csv
 __pycache__/
+*.mp4
