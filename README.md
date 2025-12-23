@@ -1,2 +1,2 @@
 # SYSC-4907
-Capstone Project Files
+## A Machine Learning Based Video Player for Streaming Applications
