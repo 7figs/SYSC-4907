@@ -20,10 +20,6 @@ def home():
 def coldStart():
     return render_template("coldStart.html")
 
-@app.route("/choose_account")
-def chooseAccount():
-    return render_template("chooseAccount.html")
-
 @app.route("/settings")
 def loadStoreDelete():
     return render_template("settings.html")
@@ -31,6 +27,15 @@ def loadStoreDelete():
 @app.route("/video")
 def video():
     return render_template("video.html")
+
+@app.route("/feed/<id>")
+def feed(id):
+    return render_template("feed.html")
+
+@app.route("/settings/<id>")
+def settings(id):
+    return render_template("settings.html")
+
 
 """
 Endpoints

@@ -3,6 +3,7 @@
     margin: 0;
     padding: 0;
     --nav_font_size: 20px;
+    --profile_font_size: 30px;
     --primary-color: rgb(17, 108, 255);
     --primary-hover-color: rgb(55, 132, 255);
     --dark-bg-color: rgb(40, 43, 47);
@@ -29,18 +30,18 @@ body {
 }
 
 .toast {
-    visibility: hidden; 
-    min-width: 250px; 
-    margin-left: -125px; 
-    color: var(--dark-font-color); 
-    text-align: center; 
-    border-radius: 15px; 
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    color: var(--dark-font-color);
+    text-align: center;
+    border-radius: 15px;
     font-weight: bold;
-    padding: 16px; 
-    position: fixed; 
-    z-index: 2; 
-    left: 50%; 
-    bottom: 30px; 
+    padding: 16px;
+    position: fixed;
+    z-index: 2;
+    left: 50%;
+    bottom: 30px;
 }
 
 .toast-show {
@@ -50,23 +51,51 @@ body {
 }
 
 @-webkit-keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
+    from {
+        bottom: 0;
+        opacity: 0;
+    }
+
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
 }
 
 @keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
+    from {
+        bottom: 0;
+        opacity: 0;
+    }
+
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
 }
 
 @-webkit-keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
+    from {
+        bottom: 30px;
+        opacity: 1;
+    }
+
+    to {
+        bottom: 0;
+        opacity: 0;
+    }
 }
 
 @keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
+    from {
+        bottom: 30px;
+        opacity: 1;
+    }
+
+    to {
+        bottom: 0;
+        opacity: 0;
+    }
 }
 
 .toast-success {
@@ -76,4 +105,3 @@ body {
 .toast-error {
     background-color: rgb(204, 20, 20);
 }
-

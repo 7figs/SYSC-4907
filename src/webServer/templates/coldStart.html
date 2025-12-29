@@ -5,8 +5,14 @@
 {% endblock %}
 {% block content %}
     <div class="panel">
-        <label for="name"><h1>What Is Your Name?</h1></label>
-        <input id="name" type="text" class="input-field">
+        <label for="name"><h1>Please Enter a Username, and Profile Colour: </h1></label>
+        <div class="name-and-color">
+            <input id="name" type="text" class="input-field">
+            <div class="color-section">
+                <div id="pfp" class="pfp"><img src="../static/images/svg/profile.svg" alt="profile"></div>
+                <input id="color" type="color">
+            </div>
+        </div>
         <div class="panel-button-group">
             <button onclick="window.location.href='/'" class="panel-button cancel-btn">Cancel</button>
             <button class="panel-button submit-btn">Next &#8594;</button>

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Feed{% endblock %}
+{% block links %}
+    <link rel="stylesheet" href="../static/css/feed.css">
+    <link rel="stylesheet" href="../static/css/choose_profile.css">
+{% endblock %}
+{% block content %}
+    <nav>
+        <p>Product Name Here</p>
+        <div class="options-container">
+            <div id="pfp" class="nav-pfp">
+                <img src="../static/images/svg/profile.svg" alt="profile">
+            </div>
+            <div id="dropdown-options" class="dropdown-options hidden">
+                <span id="settings" class="option">Settings</span>
+                <span id= "switch-profiles" class="option">Switch Profiles</span>
+            </div>
+        </div>
+    </nav>
+    <div id="add-profile-container" class="add-profile-container hidden">
+        <div class="add-profile-popup">
+            <div class="choose-profile-popup-header">
+                <h1>Add Profile</h1>
+                <button id="add-profile-close">
+                    <img src="../static/images/svg/cross.svg" alt="close">
+                </button>
+            </div>
+            <hr>
+            <div class="add-options">
+                <div id="create-new-profile" class="create-new-profile">
+                    Create New Profile
+                </div>
+                <hr>
+                <div class="upload-profile">
+                    Upload Profile
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="choose-profile-container" class="choose-profile-container hidden">
+        <div class="choose-profile-popup">
+            <div class="choose-profile-popup-header">
+                <h1>Choose Profile</h1>
+                <button id="choose-profile-close">
+                    <img src="../static/images/svg/cross.svg" alt="close">
+                </button>
+            </div>
+            <hr>
+            <div id="profiles" class="profiles">
+                <button id="add-profile-button">
+                    <img src="../static/images/svg/plus.svg" alt="add">
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="../static/js/choose_profile.js"></script>
+    <script src="../static/js/feed.js"></script>
+{% endblock %}

@@ -2,30 +2,32 @@ nav {
     width: 100vw;
     justify-content: space-between;
     display: flex;
+    position: sticky;
+    top: 0;
 }
 
-nav > p {
+nav>p {
     font-weight: bold;
     padding-left: 20px;
     font-size: var(--nav_font_size);
     color: var(--primary-color);
 }
 
-nav > ul {
+nav>ul {
     display: flex;
     width: 25%;
     justify-content: space-evenly;
     list-style-type: none;
 }
 
-.nav-option{
+.nav-option {
     color: var(--dark-font-color);
     text-decoration: none;
     font-weight: bold;
     cursor: pointer;
 }
 
-.nav-option:hover{
+.nav-option:hover {
     text-decoration: underline;
 }
 
@@ -49,14 +51,14 @@ nav > ul {
 }
 
 .carousel-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(40, 43, 47, 0.266);
-  z-index: 1;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(40, 43, 47, 0.266);
+    z-index: 1;
 }
 
 .carousel-item img {
@@ -78,7 +80,9 @@ nav > ul {
     0% {
         transform: translateX(0);
     }
+
     100% {
-        transform: translateX(-600%); /* Adjust based on duplicated content */
+        transform: translateX(-600%);
+        /* Adjust based on duplicated content */
     }
 }

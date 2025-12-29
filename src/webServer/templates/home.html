@@ -2,17 +2,54 @@
 {% block title %}Home{% endblock %}
 {% block links %}
     <link rel="stylesheet" href="../static/css/home.css">
+    <link rel="stylesheet" href="../static/css/choose_profile.css">
 {% endblock %}
 {% block content %}
     <nav>
         <p>Product Name Here</p>
         <ul>
             <li><a class="nav-option" href="start">Get Started</a></li>
-            <li><a class="nav-option" href="choose_account">Choose Account</a></li>
+            <li id="choose-profile-link" class="nav-option">Choose Profile</li>
             <li><a class="nav-option" href="video">Watch Video</a></li>
         </ul>
         
     </nav>
+    <div id="add-profile-container" class="add-profile-container hidden">
+        <div class="add-profile-popup">
+            <div class="choose-profile-popup-header">
+                <h1>Add Profile</h1>
+                <button id="add-profile-close">
+                    <img src="../static/images/svg/cross.svg" alt="close">
+                </button>
+            </div>
+            <hr>
+            <div class="add-options">
+                <div id="create-new-profile" class="create-new-profile">
+                    Create New Profile
+                </div>
+                <hr>
+                <div class="upload-profile">
+                    Upload Profile
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="choose-profile-container" class="choose-profile-container hidden">
+        <div class="choose-profile-popup">
+            <div class="choose-profile-popup-header">
+                <h1>Choose Profile</h1>
+                <button id="choose-profile-close">
+                    <img src="../static/images/svg/cross.svg" alt="close">
+                </button>
+            </div>
+            <hr>
+            <div id="profiles" class="profiles">
+                <button id="add-profile-button">
+                    <img src="../static/images/svg/plus.svg" alt="add">
+                </button>
+            </div>
+        </div>
+    </div>
     <div class="landing">
         <h1>
             Access Your Favourite Movies <br><span class="primary">With Piece Of Mind</span>
@@ -59,4 +96,9 @@
             </div>
         </div>
     </div>
+    <div id="toast" class="toast"></div>
+{% endblock %}
+{% block scripts %}
+    <script src="../static/js/choose_profile.js"></script>
+    <script src="../static/js/home.js"></script>
 {% endblock %}

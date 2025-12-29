@@ -1,0 +1,50 @@
+nav {
+    width: 100vw;
+    justify-content: space-between;
+    display: flex;
+    position: sticky;
+    top: 0;
+}
+
+nav>p {
+    font-weight: bold;
+    padding-left: 20px;
+    font-size: var(--nav_font_size);
+    color: var(--primary-color);
+}
+
+.dropdown-options {
+    position: absolute;
+    width: 130px;
+    background-color: var(--alt-color);
+    display: flex;
+    flex-direction: column;
+    right: 0;
+}
+
+.nav-pfp {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.nav-pfp>img {
+    aspect-ratio: 1/1;
+    width: 100%;
+}
+
+.options-container {
+    position: relative;
+}
+
+.option {
+    cursor: pointer;
+    padding: 5px;
+}
+
+.option:hover {
+    color: var(--dark-bg-color);
+    background-color: var(--dark-font-color);
+}

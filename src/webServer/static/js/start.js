@@ -4,4 +4,3 @@ async function fetch_movies() {
     movies = await movies.json();
     localStorage.setItem("movies", JSON.stringify(movies));
 }
-fetch_movies();

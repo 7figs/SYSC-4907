@@ -114,3 +114,36 @@
 .card-selected {
     box-shadow: 0 0 10px var(--dark-font-color);
 }
+
+.name-and-color {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+
+}
+
+.color-section {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 20px;
+}
+
+#color {
+    width: 50px;
+    height: 50px;
+}
+
+.pfp {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: black;
+    margin-right: 20px;
+}
+
+.pfp>img {
+    aspect-ratio: 1/1;
+    width: 100%;
+}
