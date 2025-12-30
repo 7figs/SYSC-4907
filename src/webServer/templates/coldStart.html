@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Start{% endblock %}
 {% block links %}
-    <link rel="stylesheet" href="../static/css/cold_start.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cold_start.css') }}">
 {% endblock %}
 {% block content %}
     <div class="panel">
@@ -43,5 +43,5 @@
     <div id="toast" class="toast"></div>
 {% endblock %}
 {% block scripts %}
-    <script type="module" src="../static/js/cold_start.js"></script>
+    <script type="module" src = "{{ url_for('static', filename='js/cold_start.js') }}"></script>
 {% endblock %}

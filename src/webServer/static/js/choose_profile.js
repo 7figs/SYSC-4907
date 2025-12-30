@@ -16,7 +16,7 @@ if (profiles) {
         let pfp = document.createElement("div");
         pfp.classList.add("pfp");
         let picture = document.createElement("img");
-        picture.src = "../static/images/svg/profile.svg";
+        picture.src = "/static/images/svg/profile.svg";
         picture.alt = "profile";
         picture.style.backgroundColor = profiles[i].colour;
         picture.style.borderRadius = "50%";

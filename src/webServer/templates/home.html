@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block links %}
-    <link rel="stylesheet" href="../static/css/home.css">
-    <link rel="stylesheet" href="../static/css/choose_profile.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/choose_profile.css') }}">
 {% endblock %}
 {% block content %}
     <nav>
@@ -99,6 +99,6 @@
     <div id="toast" class="toast"></div>
 {% endblock %}
 {% block scripts %}
-    <script src="../static/js/choose_profile.js"></script>
-    <script src="../static/js/home.js"></script>
+    <script type="module" src = "{{ url_for('static', filename='js/choose_profile.js') }}"></script>
+    <script type="module" src = "{{ url_for('static', filename='js/home.js') }}"></script>
 {% endblock %}

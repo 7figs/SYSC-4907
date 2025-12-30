@@ -28,11 +28,11 @@ async function generate_random_movies() {
     load_new_randoms = !((localStorage.getItem("random_like")) && (localStorage.getItem("random_dislike")));
     let add_movie = true;
     if (load_new_randoms) {
-        for (let i = 0; i < num_options; i++) {
+        while (random_like.length < num_options) {
+            add_movie = true;
             let movie = movies[Math.floor(Math.random() * movies.length)];
-            for (let j = 0; j < random_like.length; j++) {
-                if (random_like[j][0] == movie[0] && random_like[j][1] == movie[1]) {
-                    i--;
+            for (let i = 0; i < random_like.length; i++) {
+                if (random_like[i][0] == movie[0] && random_like[i][1] == movie[1]) {
                     add_movie = false;
                     break;
                 }
@@ -43,23 +43,21 @@ async function generate_random_movies() {
         }
         localStorage.removeItem("random_like");
         localStorage.setItem("random_like", JSON.stringify(random_like));
+        random_like = JSON.parse(localStorage.getItem("random_like"));
         add_movie = true;
-        for (let i = 0; i < num_options; i++) {
+        while (random_dislike.length < num_options) {
+            add_movie = true;
             let movie = movies[Math.floor(Math.random() * movies.length)];
-            for (let j = 0; j < random_dislike.length; j++) {
-                if (random_dislike[j][0] == movie[0] && random_dislike[j][1] == movie[1]) {
-                    i--;
+            for (let i = 0; i < random_like.length; i++) {
+                if (random_like[i][0] == movie[0] && random_like[i][1] == movie[1]) {
                     add_movie = false;
                     break;
                 }
-                else {
-                    for (let k = 0; k < random_like.length; k++) {
-                        if (random_like[j][0] == movie[0] && random_like[j][1] == movie[1]) {
-                            i--; 
-                            add_movie = false;
-                            break;
-                        }
-                    }
+            }
+            for (let i = 0; i < random_dislike.length; i++) {
+                if (random_dislike[i][0] == movie[0] && random_dislike[i][1] == movie[1]) {
+                    add_movie = false;
+                    break;
                 }
             }
             if (add_movie) {
@@ -202,8 +200,14 @@ function create_card(name) {
     let card = document.createElement("div");
     card.classList.add("card");
 
+    let file_name = name.toLowerCase();
+    file_name = file_name.replaceAll(" ","");
+    file_name = file_name.replaceAll(".","");
+    file_name = file_name.replaceAll(":","");
+
     let image = document.createElement("img");
-    image.setAttribute("src", "../static/images/portrait/thegodfather.jpg");
+    image.setAttribute("src", `../static/images/portrait/${file_name}.jpg`);
+    image.setAttribute("onerror", "this.onerror=null;this.src='../static/images/portrait/PLACEHOLDER.jpg'");
     image.classList.add("card-not-selected");
 
     let title = document.createElement("p");

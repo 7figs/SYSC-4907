@@ -1,12 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Feed{% endblock %}
 {% block links %}
-    <link rel="stylesheet" href="../static/css/feed.css">
-    <link rel="stylesheet" href="../static/css/choose_profile.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/choose_profile.css') }}">
 {% endblock %}
 {% block content %}
     <nav>
         <p>Product Name Here</p>
+        <div class="search-panel">
+            <div class="search-bar">
+                <img src="../static/images/svg/search.svg" alt="search">
+                <input id="search-bar" type="text" placeholder="Search..">
+            </div>
+            <div id="results-panel" class="results-panel hidden">
+            </div>
+        </div>
         <div class="options-container">
             <div id="pfp" class="nav-pfp">
                 <img src="../static/images/svg/profile.svg" alt="profile">
@@ -55,6 +63,6 @@
     </div>
 {% endblock %}
 {% block scripts %}
-    <script src="../static/js/choose_profile.js"></script>
-    <script src="../static/js/feed.js"></script>
+    <script src = "{{ url_for('static', filename='js/choose_profile.js') }}"></script>
+    <script src = "{{ url_for('static', filename='js/feed.js') }}"></script>
 {% endblock %}

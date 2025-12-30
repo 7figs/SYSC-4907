@@ -1,4 +1,10 @@
+async function load_movies() {
+    await fetch_movies();
+}
+load_movies();
+
 let choose_profile_link = document.getElementById("choose-profile-link");
+let choose_profile_container = document.getElementById("choose-profile-container");
 
 let success_message = localStorage.getItem("show_toast");
 let toast = document.getElementById("toast");
@@ -13,9 +19,5 @@ if (success_message) {
 }
 
 choose_profile_link.addEventListener("click", () => {
-    choose_profile_popup.classList.remove("hidden");
+    choose_profile_container.classList.remove("hidden");
 });
-
-async function load_movies() {
-    await fetch_movies();
-}

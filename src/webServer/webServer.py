@@ -36,6 +36,10 @@ def feed(id):
 def settings(id):
     return render_template("settings.html")
 
+@app.route("/preview/<id>/<name>")
+def preview(id, name):
+    return render_template("preview.html")
+
 
 """
 Endpoints

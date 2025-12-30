@@ -48,3 +48,67 @@ nav>p {
     color: var(--dark-bg-color);
     background-color: var(--dark-font-color);
 }
+
+.search-panel {
+    position: relative;
+    width: 30%;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    justify-self: center;
+    margin-bottom: 20px;
+}
+
+.search-bar>img {
+    width: 40px;
+    height: 40px;
+}
+
+.search-bar>input {
+    background-color: var(--dark-bg-color);
+    border: none;
+    border-bottom: 2px solid var(--dark-font-color);
+    color: var(--dark-font-color);
+    padding: 5px;
+    font-size: var(--nav_font_size);
+    min-width: 300px;
+    margin-left: 20px;
+}
+
+.results-panel {
+    position: absolute;
+    border: 1px solid var(--dark-font-color);
+    border-top: none;
+    width: 90%;
+    padding: 20px 5%;
+    max-height: 500px;
+    overflow-y: scroll;
+    z-index: 3;
+    background-color: var(--dark-bg-color);
+}
+
+.movie-result {
+    display: flex;
+    align-items: center;
+    height: 100px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-top: 1px solid var(--dark-font-color);
+}
+
+.movie-result:hover {
+    background-color: var(--alt-color);
+    transition: background-color 1s;
+}
+
+.movie-result>img {
+    aspect-ratio: 2/3;
+    height: 100%;
+}
+
+.movie-result-title {
+    margin-left: 50px;
+    font-size: var(--nav_font_size);
+}

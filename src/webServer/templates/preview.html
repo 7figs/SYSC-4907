@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Preview{% endblock %}
+{% block links %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/preview.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/choose_profile.css') }}">
+{% endblock %}
+{% block content %}
+    <nav>
+        <p>Product Name Here</p>
+        <div class="options-container">
+            <div id="pfp" class="nav-pfp">
+                <img src="{{ url_for('static', filename='images/svg/profile.svg') }}" alt="profile">
+            </div>
+            <div id="dropdown-options" class="dropdown-options hidden">
+                <span id="settings" class="option">Settings</span>
+                <span id= "switch-profiles" class="option">Switch Profiles</span>
+            </div>
+        </div>
+    </nav>
+    <div id="movie-preview" class="movie-preview">
+        <img id="movie-poster" src="{{ url_for('static', filename='images/portrait/PLACEHOLDER.jpg') }}" alt="movie poster">
+        <div id="movie-description" class="movie-description"></div>
+        <div class="preview-button-container">
+            <button class="watch-movie-button"><h1>Watch Movie</h1></button>
+        </div>
+    </div>
+    <div id="add-profile-container" class="add-profile-container hidden">
+        <div class="add-profile-popup">
+            <div class="choose-profile-popup-header">
+                <h1>Add Profile</h1>
+                <button id="add-profile-close">
+                    <img src="{{ url_for('static', filename='images/svg/cross.svg') }}" alt="close">
+                </button>
+            </div>
+            <hr>
+            <div class="add-options">
+                <div id="create-new-profile" class="create-new-profile">
+                    Create New Profile
+                </div>
+                <hr>
+                <div class="upload-profile">
+                    Upload Profile
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="choose-profile-container" class="choose-profile-container hidden">
+        <div class="choose-profile-popup">
+            <div class="choose-profile-popup-header">
+                <h1>Choose Profile</h1>
+                <button id="choose-profile-close">
+                    <img src="{{ url_for('static', filename='images/svg/cross.svg') }}" alt="close">
+                </button>
+            </div>
+            <hr>
+            <div id="profiles" class="profiles">
+                <button id="add-profile-button">
+                    <img src="{{ url_for('static', filename='images/svg/plus.svg') }}" alt="add">
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src = "{{ url_for('static', filename='js/choose_profile.js') }}"></script>
+    <script type="module" src = "{{ url_for('static', filename='js/preview.js') }}"></script>
+{% endblock %}
