@@ -18,7 +18,7 @@ let toast = document.getElementById("toast");
 let pfp = document.getElementById("pfp");
 let color = document.getElementById("color");
 
-color.addEventListener("change", () => {
+color.addEventListener("input", () => {
     pfp.style.backgroundColor = color.value;
 });
 
@@ -176,6 +176,8 @@ async function create_profile() {
 }
 
 function change_panel(i, dir) {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
     if (dir) {
         if (i == num_panels - 1) {
 

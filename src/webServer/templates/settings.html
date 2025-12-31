@@ -1,5 +1,38 @@
 {% extends "base.html" %}
 {% block title %}Settings{% endblock %}
+{% block links %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+{% endblock %}
 {% block content %}
-    Settings will go here
+    <nav>
+        <a href="/"><p>Product Name Here</p></a>
+    </nav>
+    <div class="settings-content">
+        <div class="profile-edit-section">
+            <div id="pfp" class="pfp">
+                <img src="../static/images/svg/profile.svg" alt="profile">
+            </div>
+            <div class="fields">
+                <input id="username" type="text" autocomplete="off" placeholder="Username">
+                <input id="profile-color" type="color">
+            </div>
+            <div class="settings-button-group">
+                <button id="cancel-change-button"><h1>Cancel</h1></button>
+                <button id="save-change-button"><h1><span class="fa-solid fa-floppy-disk"></span> Save</h1></button>
+            </div>
+        </div>
+        <div class="watch-history">
+            <h1>Watch History</h1>
+            <hr>
+            <div id="history" class="history"></div>
+        </div>
+        <div class="settings-button-group">
+            <button id="download-data-button"><h1><span class="fa-solid fa-download"></span> Download Data</h1></button>
+            <button id="delete-profile-button"><h1><span class="fa-solid fa-trash-can"></span> Delete Profile</h1></button>
+        </div>
+    </div>
+    <div id="toast" class="toast"></div>
+{% endblock %}
+{% block scripts %}
+    <script type="module" src = "{{ url_for('static', filename='js/settings.js') }}"></script>
 {% endblock %}

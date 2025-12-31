@@ -105,3 +105,33 @@ body {
 .toast-error {
     background-color: rgb(204, 20, 20);
 }
+
+nav {
+    width: 100vw;
+    justify-content: space-between;
+    display: flex;
+    position: sticky;
+    top: 0;
+}
+
+nav>p {
+    font-weight: bold;
+    padding-left: 20px;
+    font-size: var(--nav_font_size);
+    color: var(--primary-color);
+}
+
+nav>a {
+    font-weight: bold;
+    padding-left: 20px;
+    font-size: var(--nav_font_size);
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+nav>ul {
+    display: flex;
+    width: 25%;
+    justify-content: space-evenly;
+    list-style-type: none;
+}

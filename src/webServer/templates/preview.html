@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
     <nav>
-        <p>Product Name Here</p>
+        <a href="/"><p>Product Name Here</p></a>
         <div class="options-container">
             <div id="pfp" class="nav-pfp">
                 <img src="{{ url_for('static', filename='images/svg/profile.svg') }}" alt="profile">
@@ -21,7 +21,7 @@
         <img id="movie-poster" src="{{ url_for('static', filename='images/portrait/PLACEHOLDER.jpg') }}" alt="movie poster">
         <div id="movie-description" class="movie-description"></div>
         <div class="preview-button-container">
-            <button class="watch-movie-button"><h1>Watch Movie</h1></button>
+            <button class="watch-movie-button"><h1><span class="fa-solid fa-play"></span> Watch Movie</h1></button>
         </div>
     </div>
     <div id="add-profile-container" class="add-profile-container hidden">

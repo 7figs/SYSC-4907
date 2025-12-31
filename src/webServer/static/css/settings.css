@@ -1,0 +1,70 @@
+.settings-content {
+    width: 75vw;
+    margin-left: 12.5vw;
+    display: grid;
+    grid: 80% 20% / 30% 60%;
+    column-gap: 20px;
+}
+
+.profile-edit-section {
+    grid-row: 1 / span 2;
+}
+
+.pfp {
+    width: 80%;
+    justify-self: center;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.pfp>img {
+    width: 100%;
+}
+
+.fields {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#username {
+    width: 80%;
+    font-size: var(--nav_font_size);
+    border: 1px solid var(--dark-font-color);
+    border-radius: 8px;
+    padding: 5px 20px;
+    text-align: center;
+    background-color: var(--dark-bg-color);
+    color: var(--dark-font-color);
+}
+
+#profile-color {
+    width: 50px;
+    height: 50px;
+}
+
+.settings-button-group {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.settings-button-group>button {
+    color: var(--dark-font-color);
+    border: none;
+    border-radius: 15px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+#cancel-change-button,
+#delete-profile-button {
+    background-color: var(--danger-color);
+}
+
+#save-change-button,
+#download-data-button {
+    background-color: var(--primary-color);
+}

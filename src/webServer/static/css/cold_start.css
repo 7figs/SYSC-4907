@@ -16,7 +16,7 @@
     text-align: center;
 }
 
-.panel p {
+.panel h2 {
     text-align: center;
 }
 
@@ -29,6 +29,9 @@
     padding: 5px;
     border-radius: 5px;
     height: 35px;
+    text-align: center;
+    font-size: var(--nav_font_size);
+    margin-bottom: 20px;
 }
 
 .panel-button-group {
