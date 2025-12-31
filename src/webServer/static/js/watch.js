@@ -4,7 +4,7 @@ async function load_movies() {
     movies = JSON.parse(localStorage.getItem("movies"));
 }
 
-async function preview_movie() {
+async function setup_page() {
     await load_movies();
     let pfp = document.getElementById("pfp");
     let dorpdown_options = document.getElementById("dropdown-options");
@@ -51,32 +51,45 @@ async function preview_movie() {
     }
 
     if (!profile_exists || !movie_exists) {
-        location.assign("/preview");
+        location.assign("/watch");
     }
 
-    let description_section = document.getElementById("movie-description");
     let movie_title = movies[movie_index][0];
-    let movie_overview = movies[movie_index][1];
-    let title = document.createElement("h1");
-    let overview = document.createElement("p");
+    let title = document.getElementById("movie-title");
     title.innerText = movie_title;
-    overview.innerText = movie_overview;
-    description_section.appendChild(title);
-    let hr = document.createElement("hr");
-    hr.style.marginBottom = "20px";
-    description_section.appendChild(hr);
-    description_section.appendChild(overview);
-    let file_name = movie_title.toLowerCase();
-    file_name = file_name.replaceAll(" ","");
-    file_name = file_name.replaceAll(".","");
-    file_name = file_name.replaceAll(":","");
-    let poster = document.getElementById("movie-poster");
-    poster.setAttribute("src", `/static/images/portrait/${file_name}.jpg`);
-    poster.setAttribute("onerror", "this.onerror=null;this.src='/static/images/portrait/PLACEHOLDER.jpg'");
-
-    let watch_button = document.getElementById("watch-movie-button");
-    watch_button.addEventListener("click", () => {
-        location.assign(`/watch/${userId}/${movie_title}`);
-    });
 }
-preview_movie();
+setup_page();
+
+let video = document.getElementById("video");
+
+// Dynamically build the URL based on browser address
+let hostname = window.location.hostname;  // example: 192.168.2.27
+let port = window.location.port || 8000;  // fallback if no port visible
+let src = "http://142.112.252.221:50000/stream.m3u8";
+
+console.log("Using dynamic video source:", src);
+
+if (Hls.isSupported()) {
+    const hls = new Hls(
+        {
+            maxBufferLength: 100,
+            liveMaxLatencyDuration: 10,
+            backBufferLength: 30,
+            liveSyncDuration: 3
+        }
+    );
+    hls.loadSource(src);
+    hls.attachMedia(video);
+} else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = src;  // Safari native support
+}
+
+document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+function handleFullscreenChange() {
+    if (document.fullscreenElement === video) {
+        video.classList.remove("rounded-corner");
+    } else if (document.fullscreenElement === null) {
+        video.classList.add("rounded-corner");
+    }
+}

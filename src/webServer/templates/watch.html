@@ -1,20 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Feed{% endblock %}
+{% block title %}Video{% endblock %}
 {% block links %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/watch.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/choose_profile.css') }}">
 {% endblock %}
 {% block content %}
     <nav>
         <a href="/"><p>Product Name Here</p></a>
-        <div class="search-panel">
-            <div class="search-bar">
-                <img src="{{ url_for('static', filename='images/svg/search.svg') }}" alt="search">
-                <input id="search-bar" type="text" placeholder="Search.." autocomplete="off">
-            </div>
-            <div id="results-panel" class="results-panel hidden">
-            </div>
-        </div>
         <div class="options-container">
             <div id="pfp" class="nav-pfp">
                 <img src="{{ url_for('static', filename='images/svg/profile.svg') }}" alt="profile">
@@ -61,23 +53,19 @@
             </div>
         </div>
     </div>
-    <div class="feed-content">
-        <div class="recommendations">
-            <h1>Recommended Movies for You</h1>
-            <hr>
-            <div id="recommended-movies" class="recommended-movies">
-            </div>
-        </div>
-        <hr>
-        <div class="others">
-            <h1>Other Movies</h1>
-            <hr>
-            <div id="other-movies" class="other-movies">
-            </div>
+    <div class="video-container">
+        <video id="video" class="rounded-corner" controls autoplay></video>
+    </div>
+    <div class="watch-options">
+        <h1 id="movie-title"></h1>
+        <div class="watch-button-group">
+            <button id="watch-button-like" class="watch-button watch-like"><h1><span class="fa-solid fa-thumbs-up"></span></h1></button>
+            <button id="watch-button-dislike" class="watch-button watch-dislike"><h1><span class="fa-regular fa-thumbs-down"></span></h1></button>
         </div>
     </div>
 {% endblock %}
 {% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src = "{{ url_for('static', filename='js/choose_profile.js') }}"></script>
-    <script src = "{{ url_for('static', filename='js/feed.js') }}"></script>
+    <script type="module" src = "{{ url_for('static', filename='js/watch.js') }}"></script>
 {% endblock %}

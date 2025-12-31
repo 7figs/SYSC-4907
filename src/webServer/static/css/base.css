@@ -10,6 +10,8 @@
     --dark-font-color: rgb(226, 226, 226);
     --danger-color: rgb(228, 43, 43);
     --alt-color: rgb(137, 137, 137);
+    --like-color: rgb(220, 164, 9);
+    --dislike-color: rgb(211, 13, 168);
 }
 
 body {
@@ -109,9 +111,11 @@ body {
 nav {
     width: 100vw;
     justify-content: space-between;
+    align-items: center;
     display: flex;
     position: sticky;
     top: 0;
+    z-index: 10;
 }
 
 nav>p {

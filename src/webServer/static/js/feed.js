@@ -7,6 +7,7 @@ let pfp = document.getElementById("pfp");
 let dorpdown_options = document.getElementById("dropdown-options");
 let settings = document.getElementById("settings");
 let switch_profiles = document.getElementById("switch-profiles");
+let num_other_movies = 30;
 
 async function load_movies() {
     localStorage.removeItem("movies");
@@ -66,7 +67,6 @@ async function populate_panel() {
         movie.setAttribute("data-name", name);
         results_panel.appendChild(movie);
         movie.addEventListener("click", () => {
-            console.log("test");
             location.assign(`/preview/${userId}/${name}`);
         });
     }
@@ -87,7 +87,7 @@ search_bar.addEventListener("input", () => {
     let text = search_bar.value;
     let movies = results_panel.children;
     for (let i = 0; i < movies.length; i++) {
-        if (!(movies[i].getAttribute("data-name").toLowerCase().includes(text.toLowerCase()))) {
+        if (!(movies[i].getAttribute("data-name").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}]+/gu, " ").includes(text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}]+/gu, " ")))) {
             movies[i].classList.add("hidden");
         }
         else {
@@ -95,3 +95,69 @@ search_bar.addEventListener("input", () => {
         }
     }
 });
+
+async function populate_feed() {
+    let tree = localStorage.getItem("tree");
+    let recommendations = await fetch(`/recommend?t=${JSON.stringify(tree)}`);
+    recommendations = await recommendations.json();
+    let recommended_section = document.getElementById("recommended-movies");
+    let other_section = document.getElementById("other-movies");
+    for (let i = 0; i < recommendations.length; i++) {
+        let movie = document.createElement("div");
+        movie.classList.add("movie");
+        let image = document.createElement("img");
+        let name = recommendations[i];
+        let file_name = name.toLowerCase();
+        file_name = file_name.replaceAll(" ","");
+        file_name = file_name.replaceAll(".","");
+        file_name = file_name.replaceAll(":","");
+        image.setAttribute("src", `/static/images/portrait/${file_name}.jpg`);
+        image.setAttribute("onerror", "this.onerror=null;this.src='../static/images/portrait/PLACEHOLDER.jpg'");
+        let p = document.createElement("p");
+        p.classList.add("movie-title");
+        p.innerText = recommendations[i];
+        movie.appendChild(image);
+        movie.appendChild(p);
+        movie.setAttribute("data-name", name);
+        movie.addEventListener("click", () => {
+            location.assign(`/preview/${userId}/${name}`);
+        });
+        recommended_section.appendChild(movie);
+    }
+    let movies = JSON.parse(localStorage.getItem("movies"));
+    let other_movies = [];
+    while (other_movies.length < num_other_movies) {
+            add_movie = true;
+            let choice = movies[Math.floor(Math.random() * movies.length)];
+            for (let i = 0; i < other_movies.length; i++) {
+                if (other_movies[i][0] == choice[0] && other_movies[i][1] == choice[1]) {
+                    add_movie = false;
+                    break;
+                }
+            }
+            if (add_movie) {
+                other_movies.push(choice);
+                let movie = document.createElement("div");
+                movie.classList.add("movie");
+                let image = document.createElement("img");
+                let name = choice[0];
+                let file_name = name.toLowerCase();
+                file_name = file_name.replaceAll(" ","");
+                file_name = file_name.replaceAll(".","");
+                file_name = file_name.replaceAll(":","");
+                image.setAttribute("src", `/static/images/portrait/${file_name}.jpg`);
+                image.setAttribute("onerror", "this.onerror=null;this.src='../static/images/portrait/PLACEHOLDER.jpg'");
+                let p = document.createElement("p");
+                p.classList.add("movie-title");
+                p.innerText = choice[0];
+                movie.appendChild(image);
+                movie.appendChild(p);
+                movie.setAttribute("data-name", name);
+                movie.addEventListener("click", () => {
+                    location.assign(`/preview/${userId}/${name}`);
+                });
+                other_section.appendChild(movie);
+            }
+        }
+}
+populate_feed();

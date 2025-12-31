@@ -28,5 +28,5 @@ def createTree(likes, dislikes):
     clf = tree.DecisionTreeClassifier(random_state=42)
     clf = clf.fit(X, Y)
     clf = pickle.dumps(clf)
-    clf = base64.b64encode(clf).decode("ascii")
+    clf = base64.urlsafe_b64encode(clf).decode("ascii")
     return [clf]

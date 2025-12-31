@@ -1,0 +1,87 @@
+.dropdown-options {
+    position: absolute;
+    width: 130px;
+    background-color: var(--alt-color);
+    display: flex;
+    flex-direction: column;
+    right: 0;
+}
+
+.nav-pfp {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.nav-pfp>img {
+    aspect-ratio: 1/1;
+    width: 100%;
+}
+
+.options-container {
+    position: relative;
+}
+
+.option {
+    cursor: pointer;
+    padding: 5px;
+}
+
+.option:hover {
+    color: var(--dark-bg-color);
+    background-color: var(--dark-font-color);
+}
+
+.video-container {
+    width: 100vw;
+    padding: 20px 0;
+    background-color: black;
+    overflow: hidden;
+}
+
+#video {
+    width: 60vw;
+    margin-left: 20vw;
+    box-shadow: 0 0 50px var(--primary-color);
+}
+
+.rounded-corner {
+    border-radius: 25px;
+}
+
+.watch-options {
+    display: grid;
+    width: 60vw;
+    margin-left: 20vw;
+}
+
+.movie-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.watch-button-group {
+    justify-self: end;
+    display: flex;
+}
+
+.watch-button {
+    padding: 5px 20px;
+    cursor: pointer;
+    border: 1px solid var(--dark-font-color);
+}
+
+.watch-like {
+    border-radius: 15px 0 0 15px;
+    background-color: var(--like-color);
+    color: var(--dark-font-color);
+}
+
+.watch-dislike {
+    border-radius: 0 15px 15px 0;
+    background-color: var(--dislike-color);
+    color: var(--dark-font-color);
+}

@@ -8,7 +8,8 @@ target_dir = os.path.abspath(os.path.join("../MLModel"))
 sys.path.insert(0, parent_dir)
 import const
 sys.path.insert(0, target_dir)
-import createTree as ml
+import createTree as ml_create_tree
+import recommend as ml_recommend
 
 app = Flask(__name__)
 
@@ -24,9 +25,9 @@ def coldStart():
 def loadStoreDelete():
     return render_template("settings.html")
 
-@app.route("/video")
-def video():
-    return render_template("video.html")
+@app.route("/watch/<id>/<name>")
+def watch(id, name):
+    return render_template("watch.html")
 
 @app.route("/feed/<id>")
 def feed(id):
@@ -39,7 +40,6 @@ def settings(id):
 @app.route("/preview/<id>/<name>")
 def preview(id, name):
     return render_template("preview.html")
-
 
 """
 Endpoints
@@ -59,9 +59,17 @@ def createTree():
     dislike = (request.args.get("d"))
     like = json.loads(like)
     dislike = json.loads(dislike)
-    tree = ml.createTree(like, dislike)
+    tree = ml_create_tree.createTree(like, dislike)
     print(tree)
     return tree
+
+@app.route("/recommend", methods=["GET"])
+def recommend():
+    tree = (request.args.get("t"))
+    tree = json.loads(tree)
+    recommendations = ml_recommend.recommend(tree)
+    print(recommendations)
+    return recommendations
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8000)

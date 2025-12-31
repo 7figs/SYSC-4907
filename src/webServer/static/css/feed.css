@@ -37,6 +37,7 @@
 .search-panel {
     position: relative;
     width: 30%;
+    z-index: 10;
 }
 
 .search-bar {
@@ -70,7 +71,8 @@
     padding: 20px 5%;
     max-height: 500px;
     overflow-y: scroll;
-    z-index: 3;
+    z-index: 11;
+    opacity: 100%;
     background-color: var(--dark-bg-color);
 }
 
@@ -80,7 +82,10 @@
     height: 100px;
     margin-bottom: 10px;
     cursor: pointer;
+    z-index: 3;
     border-top: 1px solid var(--dark-font-color);
+    background-color: var(--dark-bg-color);
+    opacity: 100% !important;
 }
 
 .movie-result:hover {
@@ -96,4 +101,46 @@
 .movie-result-title {
     margin-left: 50px;
     font-size: var(--nav_font_size);
+}
+
+.feed-content {
+    width: 80vw;
+    margin-left: 10vw;
+    z-index: 1;
+}
+
+.recommended-movies,
+.other-movies {
+    margin: 20px 0;
+    display: grid;
+    grid: auto / repeat(10, calc(8vw - 20px));
+    gap: 20px;
+    justify-content: center;
+    text-align: center;
+}
+
+.movie {
+    outline: 1px solid var(--dark-font-color);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.movie>img {
+    aspect-ratio: 2 / 3;
+    opacity: 50%;
+    width: 100%;
+}
+
+.movie:hover img {
+    opacity: 100%;
+}
+
+.movie-title {
+    padding: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }

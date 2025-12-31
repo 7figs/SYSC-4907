@@ -17,13 +17,6 @@
             </div>
         </div>
     </nav>
-    <div id="movie-preview" class="movie-preview">
-        <img id="movie-poster" src="{{ url_for('static', filename='images/portrait/PLACEHOLDER.jpg') }}" alt="movie poster">
-        <div id="movie-description" class="movie-description"></div>
-        <div class="preview-button-container">
-            <button class="watch-movie-button"><h1><span class="fa-solid fa-play"></span> Watch Movie</h1></button>
-        </div>
-    </div>
     <div id="add-profile-container" class="add-profile-container hidden">
         <div class="add-profile-popup">
             <div class="choose-profile-popup-header">
@@ -58,6 +51,13 @@
                     <img src="{{ url_for('static', filename='images/svg/plus.svg') }}" alt="add">
                 </button>
             </div>
+        </div>
+    </div>
+    <div id="movie-preview" class="movie-preview">
+        <img id="movie-poster" src="{{ url_for('static', filename='images/portrait/PLACEHOLDER.jpg') }}" alt="movie poster">
+        <div id="movie-description" class="movie-description"></div>
+        <div class="preview-button-container">
+            <button id="watch-movie-button" class="watch-movie-button"><h1><span class="fa-solid fa-play"></span> Watch Movie</h1></button>
         </div>
     </div>
 {% endblock %}
