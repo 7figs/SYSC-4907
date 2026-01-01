@@ -57,6 +57,111 @@ async function setup_page() {
     let movie_title = movies[movie_index][0];
     let title = document.getElementById("movie-title");
     title.innerText = movie_title;
+
+    let history = JSON.parse(localStorage.getItem("watch_history"));
+    let dateObj = new Date();
+    let month   = dateObj.getUTCMonth() + 1; // months from 1-12
+    let day     = dateObj.getUTCDate();
+    let year    = dateObj.getUTCFullYear();
+    let newDate = `${year}/${month}/${day}`;
+    let obj = {
+        "name": movie_title,
+        "opinion": "unknown",
+        "last_watched": newDate
+    };
+    if (history) {
+        for (let i = 0; i < history.length; i++) {
+            if (history[i].name == movie_title) {
+                obj.opinion = history[i].opinion;
+                if (history[i].last_watched != obj.last_watched) {
+                    history.push(obj);
+                    break;
+                }
+            }
+        }
+    }
+    else {
+        history = [];
+        history.push(obj);
+    }
+    localStorage.removeItem("watch_history");
+    localStorage.setItem("watch_history", JSON.stringify(history));
+
+    let like_button_solid = document.getElementById("watch-like-icon-select");
+    let like_button_regular = document.getElementById("watch-like-icon-deselect");
+    let dislike_button_solid = document.getElementById("watch-dislike-icon-select");
+    let dislike_button_regular = document.getElementById("watch-dislike-icon-deselect");
+    let like_button = document.getElementById("watch-button-like");
+    let dislike_button = document.getElementById("watch-button-dislike");
+
+    if (obj.opinion == "like") {
+        like_button_solid.classList.remove("hidden");
+        like_button_regular.classList.add("hidden");
+        dislike_button_solid.classList.add("hidden");
+        dislike_button_regular.classList.remove("hidden");
+    }
+
+    if (obj.opinion == "dislike") {
+        like_button_solid.classList.add("hidden");
+        like_button_regular.classList.remove("hidden");
+        dislike_button_solid.classList.remove("hidden");
+        dislike_button_regular.classList.add("hidden");
+    }
+
+    like_button.addEventListener("click", () => {
+        if (!like_button_solid.classList.contains("hidden")) {
+            like_button_solid.classList.add("hidden");
+            like_button_regular.classList.remove("hidden");
+            dislike_button_solid.classList.add("hidden");
+            dislike_button_regular.classList.remove("hidden");
+            for (let i = 0; i < history.length; i++) {
+                if (history[i].name == movie_title) {
+                    history[i].opinion = "unknown";
+                }
+            }
+        }
+        else {
+            like_button_solid.classList.remove("hidden");
+            like_button_regular.classList.add("hidden");
+            dislike_button_solid.classList.add("hidden");
+            dislike_button_regular.classList.remove("hidden");
+            for (let i = 0; i < history.length; i++) {
+                if (history[i].name == movie_title) {
+                    history[i].opinion = "like";
+                }
+            }
+        }
+        localStorage.removeItem("watch_history");
+        localStorage.setItem("watch_history", JSON.stringify(history));
+    });
+
+    dislike_button.addEventListener("click", () => {
+        if (!dislike_button_solid.classList.contains("hidden")) {
+            like_button_solid.classList.add("hidden");
+            like_button_regular.classList.remove("hidden");
+            dislike_button_solid.classList.add("hidden");
+            dislike_button_regular.classList.remove("hidden");
+            for (let i = 0; i < history.length; i++) {
+                if (history[i].name == movie_title) {
+                    history[i].opinion = "unknown";
+                }
+            }
+        }
+        else {
+            like_button_solid.classList.add("hidden");
+            like_button_regular.classList.remove("hidden");
+            dislike_button_solid.classList.remove("hidden");
+            dislike_button_regular.classList.add("hidden");
+            for (let i = 0; i < history.length; i++) {
+                if (history[i].name == movie_title) {
+                    history[i].opinion = "dislike";
+                }
+            }
+        }
+        localStorage.removeItem("watch_history");
+        localStorage.setItem("watch_history", JSON.stringify(history));
+    });
+
 }
 setup_page();
 

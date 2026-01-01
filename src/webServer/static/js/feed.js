@@ -116,6 +116,7 @@ async function populate_feed() {
         let p = document.createElement("p");
         p.classList.add("movie-title");
         p.innerText = recommendations[i];
+        p.setAttribute("title", recommendations[i]);
         movie.appendChild(image);
         movie.appendChild(p);
         movie.setAttribute("data-name", name);
@@ -150,6 +151,7 @@ async function populate_feed() {
                 let p = document.createElement("p");
                 p.classList.add("movie-title");
                 p.innerText = choice[0];
+                p.setAttribute("title", choice[0]);
                 movie.appendChild(image);
                 movie.appendChild(p);
                 movie.setAttribute("data-name", name);

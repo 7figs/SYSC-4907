@@ -214,6 +214,7 @@ function create_card(name) {
 
     let title = document.createElement("p");
     title.innerText = name;
+    title.setAttribute("title", name);
 
     card.appendChild(image);
     card.appendChild(title);
