@@ -4,6 +4,7 @@
     display: grid;
     grid: 80% 20% / 30% 60%;
     column-gap: 20px;
+    height: 90vh;
 }
 
 .profile-edit-section {
@@ -49,6 +50,7 @@
     justify-content: space-evenly;
     align-items: center;
     margin-top: 20px;
+    border-top: 1px solid var(--dark-font-color);
 }
 
 .settings-button-group>button {
@@ -60,11 +62,137 @@
 }
 
 #cancel-change-button,
-#delete-profile-button {
+#delete-profile-button,
+#cancel-delete-button {
     background-color: var(--danger-color);
 }
 
 #save-change-button,
-#download-data-button {
+#download-data-button,
+#confirm-delete-button {
     background-color: var(--primary-color);
+}
+
+.confirmation-modal {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.603);
+    z-index: 3;
+    position: fixed;
+}
+
+.modal {
+    text-align: center;
+    width: 25vw;
+    height: 25vh;
+    background-color: var(--dark-bg-color);
+    border-radius: 25px;
+    display: grid;
+    grid: 20% 80% / 100%;
+    gap: 20px;
+}
+
+.modal-button-group {
+    justify-self: center;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.modal-button-group>button {
+    color: var(--dark-font-color);
+    font-size: var(--nav_font_size);
+    border: none;
+    border-radius: 8px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.watch-history {
+    display: grid;
+    grid: 5% 95% / 100%;
+}
+
+.history {
+    overflow-y: scroll;
+}
+
+.log {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    height: 150px;
+    margin: 10px 0;
+    justify-content: space-between;
+    font-size: var(--nav_font_size);
+    border-bottom: 1px solid var(--dark-font-color);
+}
+
+.log-first-half {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    gap: 10px;
+}
+
+.log-first-half>img {
+    justify-self: start;
+    aspect-ratio: 2 / 3;
+    height: 100%;
+    border-radius: 8px;
+}
+
+.log-second-half {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    gap: 10px;
+    margin-right: 10px;
+}
+
+#log-watch-date {
+    justify-self: end;
+    opacity: 75%;
+}
+
+#log-button-group {
+    justify-self: end;
+}
+
+.log-button-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.log-button-group>button {
+    font-weight: bold;
+    font-size: var(--nav_font_size);
+    cursor: pointer;
+    border-radius: 8px;
+    border: none;
+}
+
+#log-like,
+#log-dislike {
+    padding: 5px;
+    background: none;
+}
+
+#log-like {
+    color: var(--like-color);
+}
+
+#log-dislike {
+    color: var(--dislike-color);
+}
+
+#log-delete {
+    padding: 5px 10px;
+    background-color: var(--danger-color);
+    color: var(--dark-font-color);
 }

@@ -154,8 +154,6 @@ async function create_profile() {
             }
             localStorage.setItem("users", JSON.stringify([user]));
         }
-        localStorage.removeItem("tree");
-        localStorage.setItem("tree", tree);
         localStorage.removeItem("dislikes");
         localStorage.removeItem("likes");
         localStorage.removeItem("random_dislike");

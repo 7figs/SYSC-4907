@@ -8,6 +8,7 @@ let dorpdown_options = document.getElementById("dropdown-options");
 let settings = document.getElementById("settings");
 let switch_profiles = document.getElementById("switch-profiles");
 let num_other_movies = 30;
+let user_index;
 
 async function load_movies() {
     localStorage.removeItem("movies");
@@ -19,6 +20,7 @@ async function load_movies() {
 
 for (let i = 0; i < profiles.length; i++) {
     if (profiles[i].id == userId) {
+        user_index = i;
         profile_exists = true;
         color = profiles[i].colour;
         pfp.style.backgroundColor = color;
@@ -97,7 +99,7 @@ search_bar.addEventListener("input", () => {
 });
 
 async function populate_feed() {
-    let tree = localStorage.getItem("tree");
+    let tree = profiles[user_index].tree[0];
     let recommendations = await fetch(`/recommend?t=${JSON.stringify(tree)}`);
     recommendations = await recommendations.json();
     let recommended_section = document.getElementById("recommended-movies");

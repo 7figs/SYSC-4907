@@ -7,6 +7,15 @@
     <nav>
         <a href="/"><p>Product Name Here</p></a>
     </nav>
+    <div id="confirmation-modal" class="hidden confirmation-modal">
+        <div class="modal">
+            <h1>Are you Sure you Want to Delete This Profile?</h1>
+            <div class="modal-button-group">
+                <button id="cancel-delete-button">Cancel</button>
+                <button id="confirm-delete-button">Confirm</button>
+            </div>
+        </div>
+    </div>
     <div class="settings-content">
         <div class="profile-edit-section">
             <div id="pfp" class="pfp">
@@ -22,9 +31,12 @@
             </div>
         </div>
         <div class="watch-history">
-            <h1>Watch History</h1>
-            <hr>
-            <div id="history" class="history"></div>
+            <div>
+                <h1>Watch History</h1>
+                <hr>
+            </div>
+            <div id="history" class="history">
+            </div>
         </div>
         <div class="settings-button-group">
             <button id="download-data-button"><h1><span class="fa-solid fa-download"></span> Download Data</h1></button>

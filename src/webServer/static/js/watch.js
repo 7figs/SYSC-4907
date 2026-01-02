@@ -30,6 +30,7 @@ async function setup_page() {
     movie_name = movie_name.replaceAll("%20", " ");
     movie_name = decodeURIComponent(movie_name);
     let color;
+    let user_index;
     let profile_exists = false;
     let movie_exists = false;
 
@@ -37,6 +38,7 @@ async function setup_page() {
 
     for (let i = 0; i < profiles.length; i++) {
         if (profiles[i].id == userId) {
+            user_index = i;
             profile_exists = true;
             color = profiles[i].colour;
             pfp.style.backgroundColor = color;
@@ -58,11 +60,11 @@ async function setup_page() {
     let title = document.getElementById("movie-title");
     title.innerText = movie_title;
 
-    let history = JSON.parse(localStorage.getItem("watch_history"));
+    let history = profiles[user_index].watch_history;
     let dateObj = new Date();
-    let month   = dateObj.getUTCMonth() + 1; // months from 1-12
-    let day     = dateObj.getUTCDate();
-    let year    = dateObj.getUTCFullYear();
+    let month = dateObj.getMonth() + 1; // months from 1-12
+    let day = dateObj.getDate();
+    let year = dateObj.getFullYear();
     let newDate = `${year}/${month}/${day}`;
     let obj = {
         "name": movie_title,
@@ -79,13 +81,16 @@ async function setup_page() {
                 }
             }
         }
+        if (history.length == 0) {
+            history.push(obj);
+        }
     }
     else {
         history = [];
         history.push(obj);
     }
-    localStorage.removeItem("watch_history");
-    localStorage.setItem("watch_history", JSON.stringify(history));
+    localStorage.removeItem("users");
+    localStorage.setItem("users", JSON.stringify(profiles));
 
     let like_button_solid = document.getElementById("watch-like-icon-select");
     let like_button_regular = document.getElementById("watch-like-icon-deselect");
@@ -131,8 +136,8 @@ async function setup_page() {
                 }
             }
         }
-        localStorage.removeItem("watch_history");
-        localStorage.setItem("watch_history", JSON.stringify(history));
+        localStorage.removeItem("users");
+        localStorage.setItem("users", JSON.stringify(profiles));
     });
 
     dislike_button.addEventListener("click", () => {
@@ -158,8 +163,8 @@ async function setup_page() {
                 }
             }
         }
-        localStorage.removeItem("watch_history");
-        localStorage.setItem("watch_history", JSON.stringify(history));
+        localStorage.removeItem("users");
+        localStorage.setItem("users", JSON.stringify(profiles));
     });
 
 }
