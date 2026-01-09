@@ -42,8 +42,8 @@
 }
 
 #video {
-    width: 60vw;
-    margin-left: 20vw;
+    width: 50vw;
+    margin-left: 25vw;
     box-shadow: 0 0 50px var(--primary-color);
 }
 

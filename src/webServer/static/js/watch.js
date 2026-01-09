@@ -182,7 +182,8 @@ let video = document.getElementById("video");
 // Dynamically build the URL based on browser address
 let hostname = window.location.hostname;  // example: 192.168.2.27
 let port = window.location.port || 8000;  // fallback if no port visible
-let src = "http://142.112.252.221:50000/stream.m3u8";
+let src = "/static/video/stream.m3u8";
+video.src = src;
 
 console.log("Using dynamic video source:", src);
 
