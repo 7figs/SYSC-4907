@@ -71,23 +71,30 @@ async function setup_page() {
         "opinion": "unknown",
         "last_watched": newDate
     };
+    let new_movie = true;
     if (history) {
         for (let i = 0; i < history.length; i++) {
             if (history[i].name == movie_title) {
+                new_movie = false;
                 obj.opinion = history[i].opinion;
                 if (history[i].last_watched != obj.last_watched) {
-                    history.push(obj);
+                    history.unshift(obj);
                     break;
                 }
             }
         }
+
+        if (new_movie) {
+            history.unshift(obj);
+        }
+        
         if (history.length == 0) {
-            history.push(obj);
+            history.unshift(obj);
         }
     }
     else {
         history = [];
-        history.push(obj);
+        history.unshift(obj);
     }
     localStorage.removeItem("users");
     localStorage.setItem("users", JSON.stringify(profiles));
