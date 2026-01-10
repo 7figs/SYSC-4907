@@ -32,7 +32,11 @@
                 </div>
                 <hr>
                 <div class="upload-profile">
-                    Upload Profile
+                    <label for="upload_profile">Upload Profile</label>
+                    <div>
+                        <input id="upload_profile" type="file" accept=".json">
+                        <input id="submit_upload" type="submit" disabled>
+                    </div>
                 </div>
             </div>
         </div>
@@ -66,6 +70,6 @@
 {% endblock %}
 {% block scripts %}
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script src = "{{ url_for('static', filename='js/choose_profile.js') }}"></script>
+    <script type = "module" src = "{{ url_for('static', filename='js/choose_profile.js') }}"></script>
     <script type="module" src = "{{ url_for('static', filename='js/watch.js') }}"></script>
 {% endblock %}

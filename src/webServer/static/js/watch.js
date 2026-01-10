@@ -33,6 +33,7 @@ async function setup_page() {
     let user_index;
     let profile_exists = false;
     let movie_exists = false;
+    let profiles = JSON.parse(localStorage.getItem("users"));
 
     let movie_index = -1;
 

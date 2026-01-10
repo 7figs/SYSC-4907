@@ -21,6 +21,21 @@ let cancel_delete_button = document.getElementById("cancel-delete-button");
 let confrim_delete_button = document.getElementById("confirm-delete-button");
 let user_index;
 let toast = document.getElementById("toast");
+let download_button = document.getElementById("download-data-button");
+
+let current_user = profiles[userId];
+
+download_button.addEventListener("click", () => {
+    download(JSON.stringify(current_user), `${current_user.name}.json`, "text/plain");
+});
+
+function download(content, fileName, contentType) {
+    let a = document.createElement("a");
+    let file = new Blob([content], { type: contentType });
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
+}
 
 for (let i = 0; i < profiles.length; i++) {
     if (profiles[i].id == userId) {
@@ -80,6 +95,9 @@ cancel_delete_button.addEventListener("click", () => {
 
 confrim_delete_button.addEventListener("click", () => {
     profiles.splice(user_index, 1);
+    for (let i = 0; i < profiles.length; i++) {
+        profiles[i].id = i;
+    }
     localStorage.removeItem("users");
     localStorage.setItem("users", JSON.stringify(profiles));
     let message = {

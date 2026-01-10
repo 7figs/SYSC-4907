@@ -19,7 +19,7 @@
     <div class="settings-content">
         <div class="profile-edit-section">
             <div id="pfp" class="pfp">
-                <img src="../static/images/svg/profile.svg" alt="profile">
+                <img src="{{ url_for('static', filename='images/svg/profile.svg') }}" alt="profile">
             </div>
             <div class="fields">
                 <input id="username" type="text" autocomplete="off" placeholder="Username">

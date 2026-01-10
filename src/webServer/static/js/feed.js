@@ -9,6 +9,7 @@ let settings = document.getElementById("settings");
 let switch_profiles = document.getElementById("switch-profiles");
 let num_other_movies = 30;
 let user_index;
+let profiles = JSON.parse(localStorage.getItem("users"));
 
 async function load_movies() {
     localStorage.removeItem("movies");

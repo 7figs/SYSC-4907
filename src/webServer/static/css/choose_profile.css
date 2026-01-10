@@ -113,8 +113,12 @@
     cursor: pointer;
 }
 
-.create-new-profile:hover,
-.upload-profile:hover {
+.upload-profile input {
+    font-size: var(--nav_font_size);
+    cursor: pointer;
+}
+
+.create-new-profile:hover {
     background-color: var(--alt-color);
     transition: background-color 1s;
 }

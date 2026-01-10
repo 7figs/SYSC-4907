@@ -3,5 +3,7 @@
     "cold_start_fail": "&#10005; Error. Please Provide a Username",
     "settings_fail": "&#10005; Error. Please Provide a Username",
     "settings_profile_success": "&#10003; Success. Profile Updated",
-    "settings_delete_profile_success": "&#10003; Success. Profile Deleted"
+    "settings_delete_profile_success": "&#10003; Success. Profile Deleted",
+    "profile_upload_success": "&#10003; Success. Profile Uploaded",
+    "profile_upload_fail": "&#10005; Error. Failed to Upload Profile"
 }

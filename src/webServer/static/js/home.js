@@ -6,13 +6,20 @@ load_movies();
 let choose_profile_link = document.getElementById("choose-profile-link");
 let choose_profile_container = document.getElementById("choose-profile-container");
 
-let success_message = localStorage.getItem("show_toast");
+let show_toast = localStorage.getItem("show_toast");
 let toast = document.getElementById("toast");
 
-if (success_message) {
-    success_message = JSON.parse(success_message);
-    toast.innerHTML = success_message.message;
-    toast.classList.add("toast-success");
+if (show_toast) {
+    let message = JSON.parse(show_toast);
+    toast.innerHTML = message.message;
+    if (message.type) {
+        toast.classList.add("toast-success");
+        toast.classList.remove("toast-error");
+    }
+    else {
+        toast.classList.remove("toast-success");
+        toast.classList.add("toast-error");
+    }
     toast.classList.add("toast-show");
     setTimeout(function(){ toast.classList.remove("toast-show") }, 2900);
     localStorage.removeItem("show_toast");
