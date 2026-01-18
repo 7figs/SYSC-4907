@@ -10,6 +10,7 @@ let switch_profiles = document.getElementById("switch-profiles");
 let num_other_movies = 30;
 let user_index;
 let profiles = JSON.parse(localStorage.getItem("users"));
+let choose_profile_container = document.getElementById("choose-profile-container");
 
 async function load_movies() {
     localStorage.removeItem("movies");
@@ -37,7 +38,7 @@ pfp.addEventListener("click", () => {
 });
 
 switch_profiles.addEventListener("click", () => {
-    choose_profile_popup.classList.remove("hidden");
+    choose_profile_container.classList.remove("hidden");
 });
 
 settings.addEventListener("click", () => {
@@ -131,7 +132,7 @@ async function populate_feed() {
     let movies = JSON.parse(localStorage.getItem("movies"));
     let other_movies = [];
     while (other_movies.length < num_other_movies) {
-            add_movie = true;
+            let add_movie = true;
             let choice = movies[Math.floor(Math.random() * movies.length)];
             for (let i = 0; i < other_movies.length; i++) {
                 if (other_movies[i][0] == choice[0] && other_movies[i][1] == choice[1]) {

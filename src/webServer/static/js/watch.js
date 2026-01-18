@@ -10,13 +10,14 @@ async function setup_page() {
     let dorpdown_options = document.getElementById("dropdown-options");
     let settings = document.getElementById("settings");
     let switch_profiles = document.getElementById("switch-profiles");
+    let choose_profile_container = document.getElementById("choose-profile-container");
 
     pfp.addEventListener("click", () => {
         dorpdown_options.classList.toggle("hidden");
     });
 
     switch_profiles.addEventListener("click", () => {
-        choose_profile_popup.classList.remove("hidden");
+        choose_profile_container.classList.remove("hidden");
     });
 
     settings.addEventListener("click", () => {
@@ -180,10 +181,18 @@ setup_page();
 
 let video = document.getElementById("video");
 
+let pathname = window.location.pathname;
+let segments = pathname.split('/');
+let movie_name = segments[segments.length - 1];
+let movie_url = movie_name.replaceAll("%20", "");
+movie_url = movie_url.replaceAll(".","");
+movie_url = movie_url.replaceAll(":","");
+movie_url = decodeURIComponent(movie_url);
+
 // Dynamically build the URL based on browser address
 let hostname = window.location.hostname;  // example: 192.168.2.27
 let port = window.location.port || 8000;  // fallback if no port visible
-let src = "/static/video/stream.m3u8";
+let src = `http://192.168.2.166:8000/movies/${movie_url}/stream.m3u8`;
 video.src = src;
 
 console.log("Using dynamic video source:", src);

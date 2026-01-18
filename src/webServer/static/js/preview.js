@@ -10,13 +10,14 @@ async function preview_movie() {
     let dorpdown_options = document.getElementById("dropdown-options");
     let settings = document.getElementById("settings");
     let switch_profiles = document.getElementById("switch-profiles");
+    let choose_profile_container = document.getElementById("choose-profile-container");
 
     pfp.addEventListener("click", () => {
         dorpdown_options.classList.toggle("hidden");
     });
 
     switch_profiles.addEventListener("click", () => {
-        choose_profile_popup.classList.remove("hidden");
+        choose_profile_container.classList.remove("hidden");
     });
 
     settings.addEventListener("click", () => {
