@@ -188,11 +188,14 @@ let movie_url = movie_name.replaceAll("%20", "");
 movie_url = movie_url.replaceAll(".","");
 movie_url = movie_url.replaceAll(":","");
 movie_url = decodeURIComponent(movie_url);
+movie_url = movie_url.toLowerCase();
+movie_url = movie_url.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}]+/gu, "");
+console.log(movie_url)
 
 // Dynamically build the URL based on browser address
 let hostname = window.location.hostname;  // example: 192.168.2.27
 let port = window.location.port || 8000;  // fallback if no port visible
-let src = `http://192.168.2.166:8000/movies/${movie_url}/stream.m3u8`;
+let src = `http://144.217.34.146:8000/movies/${movie_url}/stream.m3u8`;
 video.src = src;
 
 console.log("Using dynamic video source:", src);

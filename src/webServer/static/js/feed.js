@@ -83,7 +83,7 @@ search_bar.addEventListener("focus", () => {
 });
 
 search_bar.addEventListener("blur", () => {
-    setTimeout(function(){ results_panel.classList.add("hidden"); }, 100);
+    setTimeout(function(){ results_panel.classList.add("hidden"); }, 200);
     
 });
 
