@@ -57,8 +57,9 @@ async function preview_movie() {
     }
 
     let description_section = document.getElementById("movie-description");
-    let movie_title = movies[movie_index][0];
-    let movie_overview = movies[movie_index][1];
+    let movie_id = movies[movie_index][0];
+    let movie_title = movies[movie_index][1];
+    let movie_overview = movies[movie_index][2];
     let title = document.createElement("h1");
     let overview = document.createElement("p");
     title.innerText = movie_title;
@@ -78,7 +79,7 @@ async function preview_movie() {
 
     let watch_button = document.getElementById("watch-movie-button");
     watch_button.addEventListener("click", () => {
-        location.assign(`/watch/${userId}/${movie_title}`);
+        location.assign(`/watch/${userId}/${movie_id}`);
     });
 }
 preview_movie();

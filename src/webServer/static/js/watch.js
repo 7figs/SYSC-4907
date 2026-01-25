@@ -1,4 +1,5 @@
 let movies;
+let movie_name;
 async function load_movies() {
     await fetch_movies();
     movies = JSON.parse(localStorage.getItem("movies"));
@@ -27,7 +28,12 @@ async function setup_page() {
     let pathname = window.location.pathname;
     let segments = pathname.split('/');
     let userId = Number(segments[segments.length - 2]);
-    let movie_name = segments[segments.length - 1];
+    let movie_id = segments[segments.length - 1];
+    movies.forEach(movie => {
+        if (movie[0] == movie_id) {
+            movie_name = movie[1];
+        }
+    });
     movie_name = movie_name.replaceAll("%20", " ");
     movie_name = decodeURIComponent(movie_name);
     let color;
@@ -48,7 +54,7 @@ async function setup_page() {
     }
 
     for (let i = 0; i < movies.length; i++) {
-        if (movies[i][0] == movie_name) {
+        if (movies[i][1] == movie_name) {
             movie_exists = true;
             movie_index = i;
         }
@@ -58,7 +64,7 @@ async function setup_page() {
         location.assign("/watch");
     }
 
-    let movie_title = movies[movie_index][0];
+    let movie_title = movies[movie_index][1];
     let title = document.getElementById("movie-title");
     title.innerText = movie_title;
 
@@ -175,52 +181,51 @@ async function setup_page() {
         localStorage.removeItem("users");
         localStorage.setItem("users", JSON.stringify(profiles));
     });
-
 }
-setup_page();
 
-let video = document.getElementById("video");
+async function play_video() {
+    await setup_page();
+    let video = document.getElementById("video");
 
-let pathname = window.location.pathname;
-let segments = pathname.split('/');
-let movie_name = segments[segments.length - 1];
-let movie_url = movie_name.replaceAll("%20", "");
-movie_url = movie_url.replaceAll(".","");
-movie_url = movie_url.replaceAll(":","");
-movie_url = decodeURIComponent(movie_url);
-movie_url = movie_url.toLowerCase();
-movie_url = movie_url.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}]+/gu, "");
-console.log(movie_url)
+    let movie_url = movie_name.replaceAll("%20", "");
+    movie_url = movie_url.replaceAll(".","");
+    movie_url = movie_url.replaceAll(":","");
+    movie_url = decodeURIComponent(movie_url);
+    movie_url = movie_url.toLowerCase();
+    movie_url = movie_url.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}]+/gu, "");
+    console.log(movie_url)
 
-// Dynamically build the URL based on browser address
-let hostname = window.location.hostname;  // example: 192.168.2.27
-let port = window.location.port || 8000;  // fallback if no port visible
-let src = `http://144.217.34.146:8000/movies/${movie_url}/stream.m3u8`;
-video.src = src;
+    // Dynamically build the URL based on browser address
+    let hostname = window.location.hostname;  // example: 192.168.2.27
+    let port = window.location.port || 8000;  // fallback if no port visible
+    let src = `http://144.217.34.146:8000/movies/${movie_url}/stream.m3u8`;
+    video.src = src;
 
-console.log("Using dynamic video source:", src);
+    console.log("Using dynamic video source:", src);
 
-if (Hls.isSupported()) {
-    const hls = new Hls(
-        {
-            maxBufferLength: 100,
-            liveMaxLatencyDuration: 10,
-            backBufferLength: 30,
-            liveSyncDuration: 3
+    if (Hls.isSupported()) {
+        const hls = new Hls(
+            {
+                maxBufferLength: 100,
+                liveMaxLatencyDuration: 10,
+                backBufferLength: 30,
+                liveSyncDuration: 3
+            }
+        );
+        hls.loadSource(src);
+        hls.attachMedia(video);
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = src;  // Safari native support
+    }
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    function handleFullscreenChange() {
+        if (document.fullscreenElement === video) {
+            video.classList.remove("rounded-corner");
+        } else if (document.fullscreenElement === null) {
+            video.classList.add("rounded-corner");
         }
-    );
-    hls.loadSource(src);
-    hls.attachMedia(video);
-} else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-    video.src = src;  // Safari native support
-}
-
-document.addEventListener("fullscreenchange", handleFullscreenChange);
-
-function handleFullscreenChange() {
-    if (document.fullscreenElement === video) {
-        video.classList.remove("rounded-corner");
-    } else if (document.fullscreenElement === null) {
-        video.classList.add("rounded-corner");
     }
 }
+play_video();

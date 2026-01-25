@@ -48,7 +48,7 @@ Endpoints
 def getMovies():
     conn = sqlite3.connect(const.DB_PATH)
     cursor = conn.cursor()
-    cursor.execute(f"SELECT title, overview FROM {const.MOVIES_TABLE}")
+    cursor.execute(f"SELECT rowid, title, overview FROM {const.MOVIES_TABLE}")
     movies = cursor.fetchall()
     conn.close()
     return movies

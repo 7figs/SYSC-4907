@@ -53,7 +53,7 @@ async function populate_panel() {
     let movies_list = JSON.parse(localStorage.getItem("movies"));
 
     for (let i = 0; i < movies_list.length; i++) {
-        let name = movies_list[i][0];
+        let name = movies_list[i][1];
         let file_name = name.toLowerCase();
         file_name = file_name.replaceAll(" ","");
         file_name = file_name.replaceAll(".","");
@@ -110,7 +110,8 @@ async function populate_feed() {
         let movie = document.createElement("div");
         movie.classList.add("movie");
         let image = document.createElement("img");
-        let name = recommendations[i];
+        let name = recommendations[i][1];
+        let id = recommendations[i][0];
         let file_name = name.toLowerCase();
         file_name = file_name.replaceAll(" ","");
         file_name = file_name.replaceAll(".","");
@@ -119,13 +120,13 @@ async function populate_feed() {
         image.setAttribute("onerror", "this.onerror=null;this.src='../static/images/portrait/PLACEHOLDER.jpg'");
         let p = document.createElement("p");
         p.classList.add("movie-title");
-        p.innerText = recommendations[i];
-        p.setAttribute("title", recommendations[i]);
+        p.innerText = recommendations[i][1];
+        p.setAttribute("title", recommendations[i][1]);
         movie.appendChild(image);
         movie.appendChild(p);
         movie.setAttribute("data-name", name);
         movie.addEventListener("click", () => {
-            location.assign(`/preview/${userId}/${name}`);
+            location.assign(`/preview/${userId}/${id}`);
         });
         recommended_section.appendChild(movie);
     }
@@ -145,7 +146,8 @@ async function populate_feed() {
                 let movie = document.createElement("div");
                 movie.classList.add("movie");
                 let image = document.createElement("img");
-                let name = choice[0];
+                let name = choice[1];
+                let id = choice[0];
                 let file_name = name.toLowerCase();
                 file_name = file_name.replaceAll(" ","");
                 file_name = file_name.replaceAll(".","");
@@ -154,13 +156,13 @@ async function populate_feed() {
                 image.setAttribute("onerror", "this.onerror=null;this.src='../static/images/portrait/PLACEHOLDER.jpg'");
                 let p = document.createElement("p");
                 p.classList.add("movie-title");
-                p.innerText = choice[0];
-                p.setAttribute("title", choice[0]);
+                p.innerText = choice[1];
+                p.setAttribute("title", choice[1]);
                 movie.appendChild(image);
                 movie.appendChild(p);
                 movie.setAttribute("data-name", name);
                 movie.addEventListener("click", () => {
-                    location.assign(`/preview/${userId}/${name}`);
+                    location.assign(`/preview/${userId}/${id}`);
                 });
                 other_section.appendChild(movie);
             }

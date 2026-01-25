@@ -24,7 +24,7 @@ def recommend(tree):
     for movie in movies:
         result = clf.predict([list(movie[-21:])])
         if result:
-            recommendations.append(movie[0])
+            recommendations.append([movies.index(movie)+1, movie[0]])
     conn.close()
 
     return random.sample(recommendations, k=10)

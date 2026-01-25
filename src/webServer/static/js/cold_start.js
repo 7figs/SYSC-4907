@@ -32,7 +32,7 @@ async function generate_random_movies() {
             add_movie = true;
             let movie = movies[Math.floor(Math.random() * movies.length)];
             for (let i = 0; i < random_like.length; i++) {
-                if (random_like[i][0] == movie[0] && random_like[i][1] == movie[1]) {
+                if (random_like[i][0] == movie[0]) {
                     add_movie = false;
                     break;
                 }
@@ -49,13 +49,13 @@ async function generate_random_movies() {
             add_movie = true;
             let movie = movies[Math.floor(Math.random() * movies.length)];
             for (let i = 0; i < random_like.length; i++) {
-                if (random_like[i][0] == movie[0] && random_like[i][1] == movie[1]) {
+                if (random_like[i][0] == movie[0]) {
                     add_movie = false;
                     break;
                 }
             }
             for (let i = 0; i < random_dislike.length; i++) {
-                if (random_dislike[i][0] == movie[0] && random_dislike[i][1] == movie[1]) {
+                if (random_dislike[i][0] == movie[0]) {
                     add_movie = false;
                     break;
                 }
@@ -73,8 +73,8 @@ async function generate_random_movies() {
     }
 
     for (let i = 0; i < num_options; i++) {
-        let like_card = create_card(random_like[i][0]);
-        let dislike_card = create_card(random_dislike[i][0]);
+        let like_card = create_card(random_like[i][1], random_like[i][0]);
+        let dislike_card = create_card(random_dislike[i][1], random_dislike[i][0]);
 
         like_grid.appendChild(like_card);
         dislike_grid.appendChild(dislike_card);
@@ -196,9 +196,10 @@ function change_panel(i, dir) {
     }
 }
 
-function create_card(name) {
+function create_card(name, id) {
     let card = document.createElement("div");
     card.classList.add("card");
+    card.setAttribute("id", id);
 
     let file_name = name.toLowerCase();
     file_name = file_name.replaceAll(" ","");

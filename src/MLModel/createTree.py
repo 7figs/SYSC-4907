@@ -15,12 +15,12 @@ def createTree(likes, dislikes):
     conn = sqlite3.connect(const.DB_PATH)
     cursor = conn.cursor()
     for like in likes:
-        cursor.execute(f'SELECT * FROM {const.MOVIES_TABLE} WHERE title == "{like}"')
+        cursor.execute(f'SELECT * FROM {const.MOVIES_TABLE} WHERE rowid == "{like}"')
         test = cursor.fetchall()
         X.append(list(test[0][-21:]))
         Y.append(1)
     for dislike in dislikes:
-        cursor.execute(f'SELECT * FROM {const.MOVIES_TABLE} WHERE title == "{dislike}"')
+        cursor.execute(f'SELECT * FROM {const.MOVIES_TABLE} WHERE rowid == "{dislike}"')
         test = cursor.fetchall()
         X.append(list(test[0][-21:]))
         Y.append(0)
