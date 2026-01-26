@@ -22,7 +22,7 @@ def recommend(tree):
     cursor.execute(f'SELECT * FROM {const.MOVIES_TABLE}')
     movies = cursor.fetchall()
     for movie in movies:
-        result = clf.predict([list(movie[-21:])])
+        result = clf.predict([list(movie[2:])])
         if result:
             recommendations.append([movies.index(movie)+1, movie[0]])
     conn.close()

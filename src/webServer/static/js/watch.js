@@ -1,5 +1,7 @@
 let movies;
 let movie_name;
+let userId;
+let user_index;
 async function load_movies() {
     await fetch_movies();
     movies = JSON.parse(localStorage.getItem("movies"));
@@ -27,7 +29,7 @@ async function setup_page() {
 
     let pathname = window.location.pathname;
     let segments = pathname.split('/');
-    let userId = Number(segments[segments.length - 2]);
+    userId = Number(segments[segments.length - 2]);
     let movie_id = segments[segments.length - 1];
     movies.forEach(movie => {
         if (movie[0] == movie_id) {
@@ -37,7 +39,6 @@ async function setup_page() {
     movie_name = movie_name.replaceAll("%20", " ");
     movie_name = decodeURIComponent(movie_name);
     let color;
-    let user_index;
     let profile_exists = false;
     let movie_exists = false;
     let profiles = JSON.parse(localStorage.getItem("users"));
@@ -64,6 +65,11 @@ async function setup_page() {
         location.assign("/watch");
     }
 
+    let see_more = document.getElementById("see_more_link");
+    see_more.addEventListener("click", () => {
+        location.assign(`/feed/${userId}`);
+    });
+
     let movie_title = movies[movie_index][1];
     let title = document.getElementById("movie-title");
     title.innerText = movie_title;
@@ -75,8 +81,10 @@ async function setup_page() {
     let year = dateObj.getFullYear();
     let newDate = `${year}/${month}/${day}`;
     let obj = {
+        "id": movie_id,
         "name": movie_title,
         "opinion": "unknown",
+        "guess": "dislike",
         "last_watched": newDate
     };
     let new_movie = true;
@@ -181,6 +189,34 @@ async function setup_page() {
         localStorage.removeItem("users");
         localStorage.setItem("users", JSON.stringify(profiles));
     });
+
+    let users = JSON.parse(localStorage.getItem("users"));
+    if (history.length >= 3 && history.length % 3 == 0) {
+        let new_like = users[userId].initial_like;
+        let new_dislike = users[userId].initial_dislike;
+        for (let i = 0; i < history.length - 1; i++) {
+            if (history[i].opinion == "like") {
+                new_like.push(history[i].id);
+            }
+            if (history[i].opinion == "dislike") {
+                new_dislike.push(history[i].id);
+            }
+            if (history[i].opinion == "unknown") {
+                if (history[i].guess == "like") {
+                    new_like.push(history[i].id);
+                }
+                if (history[i].guess == "dislike") {
+                    new_dislike.push(history[i].id);
+                }
+            }
+        }
+        let tree = await fetch(`/tree?l=${JSON.stringify(new_like)}&d=${JSON.stringify(new_dislike)}`);
+        tree = await tree.json();
+        users[user_index].tree = tree;
+        localStorage.removeItem("users");
+        localStorage.setItem("users", JSON.stringify(users));
+        console.log("Tree has been recreated");
+    }
 }
 
 async function play_video() {
@@ -226,6 +262,50 @@ async function play_video() {
         } else if (document.fullscreenElement === null) {
             video.classList.add("rounded-corner");
         }
+    }
+
+    let users = JSON.parse(localStorage.getItem("users"));
+    let current_movie = users[user_index].watch_history[0];
+    let hasTriggered = false;
+
+    video.addEventListener('timeupdate', () => {
+    let percentage = (video.currentTime / video.duration) * 100;
+
+    if (percentage >= 75 && !hasTriggered && current_movie.opinion == "unknown") {
+        current_movie.guess = "like";
+        localStorage.removeItem("users");
+        localStorage.setItem("users", JSON.stringify(users));
+        hasTriggered = true;
+    }
+    });
+
+    let tree = users[user_index].tree[0];
+    let recommendations = await fetch(`/recommend?t=${JSON.stringify(tree)}`);
+    recommendations = await recommendations.json();
+    let recommended_section = document.getElementById("recommended-movies");
+    for (let i = 0; i < recommendations.length; i++) {
+        let movie = document.createElement("div");
+        movie.classList.add("movie");
+        let image = document.createElement("img");
+        let name = recommendations[i][1];
+        let id = recommendations[i][0];
+        let file_name = name.toLowerCase();
+        file_name = file_name.replaceAll(" ","");
+        file_name = file_name.replaceAll(".","");
+        file_name = file_name.replaceAll(":","");
+        image.setAttribute("src", `/static/images/portrait/${file_name}.jpg`);
+        image.setAttribute("onerror", "this.onerror=null;this.src='../static/images/portrait/PLACEHOLDER.jpg'");
+        let p = document.createElement("p");
+        p.classList.add("movie-title");
+        p.innerText = recommendations[i][1];
+        p.setAttribute("title", recommendations[i][1]);
+        movie.appendChild(image);
+        movie.appendChild(p);
+        movie.setAttribute("data-name", name);
+        movie.addEventListener("click", () => {
+            location.assign(`/preview/${userId}/${id}`);
+        });
+        recommended_section.appendChild(movie);
     }
 }
 play_video();

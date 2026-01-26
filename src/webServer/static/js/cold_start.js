@@ -138,7 +138,9 @@ async function create_profile() {
                 "name": username.value,
                 "tree": tree,
                 "watch_history": [],
-                "colour": color.value
+                "colour": color.value,
+                "initial_like": like_list,
+                "initial_dislike": dislike_list
             }
             users.push(user);
             localStorage.removeItem("users");
@@ -150,7 +152,9 @@ async function create_profile() {
                 "name": username.value,
                 "tree": tree,
                 "watch_history": [],
-                "colour": color.value
+                "colour": color.value,
+                "initial_like": like_list,
+                "initial_dislike": dislike_list
             }
             localStorage.setItem("users", JSON.stringify([user]));
         }

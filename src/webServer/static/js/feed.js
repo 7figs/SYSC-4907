@@ -54,6 +54,7 @@ async function populate_panel() {
 
     for (let i = 0; i < movies_list.length; i++) {
         let name = movies_list[i][1];
+        let id = movies_list[i][0];
         let file_name = name.toLowerCase();
         file_name = file_name.replaceAll(" ","");
         file_name = file_name.replaceAll(".","");
@@ -71,7 +72,7 @@ async function populate_panel() {
         movie.setAttribute("data-name", name);
         results_panel.appendChild(movie);
         movie.addEventListener("click", () => {
-            location.assign(`/preview/${userId}/${name}`);
+            location.assign(`/preview/${userId}/${id}`);
         });
     }
 }
