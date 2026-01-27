@@ -85,7 +85,8 @@ async function setup_page() {
         "name": movie_title,
         "opinion": "unknown",
         "guess": "dislike",
-        "last_watched": newDate
+        "last_watched": newDate,
+        "timestamp": Date.now()
     };
     let new_movie = true;
     if (history) {
@@ -191,6 +192,39 @@ async function setup_page() {
     });
 
     let users = JSON.parse(localStorage.getItem("users"));
+
+    let id_history = [];
+    let days = [];
+    let preferences = [];
+
+    if (history.length > 2) {
+        for (let i = 1; i < history.length; i++) {
+            id_history.push(history[i].id);
+            let current_time = Date.now();
+            let time_dif = current_time - history[i].timestamp;
+            time_dif = time_dif / 8640000;
+            days.push(time_dif);
+            if (history[i].opinion == "like") {
+                preferences.push(1);
+            }
+            else if (history[i].opinion == "dislike") {
+                preferences.push(-1);
+            }
+            else if (history[i].guess == "like") {
+                preferences.push(1);
+            }
+            else if (history[i].guess == "dislike") {
+                preferences.push(-1);
+            }
+        }
+
+        let user_vector = await fetch(`/user-vector?h=${JSON.stringify(id_history)}&p=${JSON.stringify(preferences)}&d=${JSON.stringify(days)}`);
+        user_vector = await user_vector.json();
+        users[user_index].vector = user_vector;
+        localStorage.removeItem("users");
+        localStorage.setItem("users", JSON.stringify(users));
+    }
+
     if (history.length >= 3 && history.length % 3 == 0) {
         let new_like = users[userId].initial_like;
         let new_dislike = users[userId].initial_dislike;
@@ -215,7 +249,6 @@ async function setup_page() {
         users[user_index].tree = tree;
         localStorage.removeItem("users");
         localStorage.setItem("users", JSON.stringify(users));
-        console.log("Tree has been recreated");
     }
 }
 
@@ -229,15 +262,12 @@ async function play_video() {
     movie_url = decodeURIComponent(movie_url);
     movie_url = movie_url.toLowerCase();
     movie_url = movie_url.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}]+/gu, "");
-    console.log(movie_url)
 
     // Dynamically build the URL based on browser address
     let hostname = window.location.hostname;  // example: 192.168.2.27
     let port = window.location.port || 8000;  // fallback if no port visible
     let src = `http://144.217.34.146:8000/movies/${movie_url}/stream.m3u8`;
     video.src = src;
-
-    console.log("Using dynamic video source:", src);
 
     if (Hls.isSupported()) {
         const hls = new Hls(
@@ -280,7 +310,21 @@ async function play_video() {
     });
 
     let tree = users[user_index].tree[0];
-    let recommendations = await fetch(`/recommend?t=${JSON.stringify(tree)}`);
+    let user_vector = users[user_index].vector;
+    if (!user_vector) {
+        user_vector = [];
+    }
+    let history = users[user_index].watch_history;
+    let too_soon = [];
+    for (let i = 0; i < history.length; i++) {
+        let cur_time = Date.now();
+        let time_dif = cur_time - history[i].timestamp;
+        time_dif = time_dif / 8640000;
+        if (time_dif < 3) {
+            too_soon.push(Number(history[i].id));
+        }
+    }
+    let recommendations = await fetch(`/recommend?t=${JSON.stringify(tree)}&v=${JSON.stringify(user_vector)}&s=${JSON.stringify(too_soon)}`);
     recommendations = await recommendations.json();
     let recommended_section = document.getElementById("recommended-movies");
     for (let i = 0; i < recommendations.length; i++) {

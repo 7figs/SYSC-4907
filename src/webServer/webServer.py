@@ -10,6 +10,7 @@ import const
 sys.path.insert(0, target_dir)
 import createTree as ml_create_tree
 import recommend as ml_recommend
+import createUserVector as ml_user_vector
 
 app = Flask(__name__)
 
@@ -60,16 +61,29 @@ def createTree():
     like = json.loads(like)
     dislike = json.loads(dislike)
     tree = ml_create_tree.createTree(like, dislike)
-    print(tree)
     return tree
 
 @app.route("/recommend", methods=["GET"])
 def recommend():
     tree = (request.args.get("t"))
+    user_vector = (request.args.get("v"))
+    too_soon = (request.args.get("s"))
     tree = json.loads(tree)
-    recommendations = ml_recommend.recommend(tree)
-    print(recommendations)
+    user_vector = json.loads(user_vector)
+    too_soon = json.loads(too_soon)
+    recommendations = ml_recommend.recommend(tree, user_vector, too_soon)
     return recommendations
+
+@app.route("/user-vector", methods=["GET"])
+def user_vector():
+    history = (request.args.get("h"))
+    preferences = (request.args.get("p"))
+    days = (request.args.get("d"))
+    history = json.loads(history)
+    preferences = json.loads(preferences)
+    days = json.loads(days)
+    user_vector = ml_user_vector.createUserVector(history, preferences, days)
+    return user_vector
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

@@ -103,7 +103,21 @@ search_bar.addEventListener("input", () => {
 
 async function populate_feed() {
     let tree = profiles[user_index].tree[0];
-    let recommendations = await fetch(`/recommend?t=${JSON.stringify(tree)}`);
+    let user_vector = profiles[user_index].vector;
+    if (!user_vector) {
+        user_vector = [];
+    }
+    let history = profiles[user_index].watch_history;
+    let too_soon = [];
+    for (let i = 0; i < history.length; i++) {
+        let cur_time = Date.now();
+        let time_dif = cur_time - history[i].timestamp;
+        time_dif = time_dif / 8640000;
+        if (time_dif < 3) {
+            too_soon.push(Number(history[i].id));
+        }
+    }
+    let recommendations = await fetch(`/recommend?t=${JSON.stringify(tree)}&v=${JSON.stringify(user_vector)}&s=${JSON.stringify(too_soon)}`);
     recommendations = await recommendations.json();
     let recommended_section = document.getElementById("recommended-movies");
     let other_section = document.getElementById("other-movies");

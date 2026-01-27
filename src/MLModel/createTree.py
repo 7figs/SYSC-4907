@@ -60,7 +60,6 @@ def createTree(likes, dislikes):
         cursor.execute(f'SELECT * FROM {const.MOVIES_TABLE} WHERE rowid == "{like}"')
         test = cursor.fetchall()
         X.append(list(test[0][2:]))
-        print(list(test[0][2:]))
         Y.append(1)
     for dislike in dislikes:
         cursor.execute(f'SELECT * FROM {const.MOVIES_TABLE} WHERE rowid == "{dislike}"')
