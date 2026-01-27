@@ -30,6 +30,7 @@ def recommend(tree, user_vector, too_soon):
             top_recommendations.append([movies.index(movie)+1, movie[0], movie[13:]])
     conn.close()
 
+    random.shuffle(top_recommendations)
     if len(user_vector) > 0:
         for i in range(len(top_recommendations)):
             score = 0
