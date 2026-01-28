@@ -180,20 +180,30 @@ def main() -> None:
     total = int(len(y_test))
     accuracy = correct / total if total else 0.0
 
+
     cm = confusion_matrix(y_test, y_pred, labels=[0, 1])
     tn, fp, fn, tp = (int(cm[0, 0]), int(cm[0, 1]), int(cm[1, 0]), int(cm[1, 1]))
 
+    recall = tp / (tp + fn)
+    precision = tp / (tp + fp)
+    fpr = fp / (fp + tn)
+
     # Output
     print("\n=== Decision Tree Evaluation ===")
-    print(f"Training size:     {N_TRAIN}")
-    print(f"Test size:         {total}")
-    print(f"Features used:     {X.shape[1]}")
+    print(f"Training size:       {N_TRAIN}")
+    print(f"Test size:           {total}")
+    print(f"Features used:       {X.shape[1]}")
     print()
     print("=== Results ===")
-    print(f"Correct:           {correct}/{total}")
-    print(f"Accuracy:          {accuracy:.4f}")
-    print(f"False Positives:   {fp}")
-    print(f"False Negatives:   {fn}")
+    print(f"Correct:             {correct}/{total}")
+    print(f"Accuracy:            {accuracy:.4f}")
+    print(f"Recall:              {recall:.4f}")
+    print(f"Precision:           {precision:.4f}")
+    print(f"False Positive Rate: {fpr:.4f}")
+    print(f"False Positives:     {fp}")
+    print(f"False Negatives:     {fn}")
+    print(f"True Positives:      {tp}")
+    print(f"True Negatives:      {tn}")
     print()
     print("Confusion Matrix (rows=true [0,1], cols=pred [0,1]):")
     print(cm)
