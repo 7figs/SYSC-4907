@@ -2,6 +2,11 @@
 """
 Decision Tree evaluation on movie features + one user's preferences.
 
+Handles preferences.csv even if values are quoted, e.g.:
+  "movie_id","user_1"
+  "1","0"
+  "2","1"
+
 Assumptions:
 - Both CSV files are in the SAME DIRECTORY as this script.
 - Preferences CSV format:
@@ -37,41 +42,84 @@ MIN_SAMPLES_LEAF = 1
 
 
 # =========================
-# IMPLEMENTATION
+# HELPERS
 # =========================
 
 def resolve_path(csv_name: str) -> Path:
     return Path(__file__).resolve().parent / csv_name
 
 
+def clean_int_series(s: pd.Series, colname: str) -> pd.Series:
+    """
+    Convert a column that might be like: 1, "1", ' "1" ', etc. into int.
+    """
+    # Convert to string, strip whitespace, strip surrounding quotes
+    s2 = (
+        s.astype(str)
+         .str.strip()
+         .str.strip('"')
+         .str.strip("'")
+         .str.strip()
+    )
+
+    # Convert to numeric safely
+    num = pd.to_numeric(s2, errors="coerce")
+
+    if num.isna().any():
+        bad = s[num.isna()].head(10).tolist()
+        raise ValueError(f"Column '{colname}' contains non-numeric values. Examples: {bad}")
+
+    return num.astype(int)
+
+
 def load_features(path: Path) -> pd.DataFrame:
-    df = pd.read_csv(path)
-    df.columns = [c.strip() for c in df.columns]
+    df = pd.read_csv(path, encoding="utf-8-sig")
+    df.columns = [str(c).strip().strip('"').strip("'").strip() for c in df.columns]
 
     if "movie_id" not in df.columns:
         df.insert(0, "movie_id", np.arange(1, len(df) + 1, dtype=int))
 
-    df["movie_id"] = df["movie_id"].astype(int)
+    df["movie_id"] = clean_int_series(df["movie_id"], "movie_id")
     return df
 
 
 def load_preferences(path: Path) -> tuple[pd.DataFrame, str]:
-    prefs = pd.read_csv(path)
-    prefs.columns = [c.strip() for c in prefs.columns]
+    # Robust CSV read (handles quotes, extra spaces, BOM)
+    prefs = pd.read_csv(
+        path,
+        encoding="utf-8-sig",
+        engine="python",
+        skipinitialspace=True,
+        quotechar='"',
+    )
+    prefs.columns = [str(c).strip().strip('"').strip("'").strip() for c in prefs.columns]
 
     if prefs.shape[1] < 2:
         raise ValueError("Preferences CSV must have movie_id + one user column")
 
+    # First column treated as movie_id, rename if needed
     if prefs.columns[0] != "movie_id":
         prefs = prefs.rename(columns={prefs.columns[0]: "movie_id"})
 
     label_col = prefs.columns[1]
 
-    prefs["movie_id"] = prefs["movie_id"].astype(int)
-    prefs[label_col] = prefs[label_col].astype(int)
+    prefs["movie_id"] = clean_int_series(prefs["movie_id"], "movie_id")
+    prefs[label_col] = clean_int_series(prefs[label_col], label_col)
+
+    # Validate labels are only 0/1
+    invalid = ~prefs[label_col].isin([0, 1])
+    if invalid.any():
+        bad_rows = prefs.loc[invalid, ["movie_id", label_col]].head(10)
+        raise ValueError(
+            f"Labels must be 0/1 only. Bad rows (first 10):\n{bad_rows.to_string(index=False)}"
+        )
 
     return prefs[["movie_id", label_col]], label_col
 
+
+# =========================
+# MAIN
+# =========================
 
 def main() -> None:
     if not (1 <= N_TRAIN <= 499):
@@ -91,16 +139,17 @@ def main() -> None:
 
     # Merge
     df = features.merge(prefs, on="movie_id", how="inner")
+    if df.shape[0] < 2:
+        raise ValueError("After merge, too few rows. Check that movie_id values match between files.")
 
     # Split X / y
     y = df[label_col].to_numpy(dtype=int)
     feature_cols = [c for c in df.columns if c not in ("movie_id", label_col)]
     X = df[feature_cols]
 
-    # 🔹 IGNORE NON-NUMERIC FEATURES 🔹
+    # Ignore non-numeric feature columns (e.g., title, overview)
     numeric_cols = [c for c in X.columns if pd.api.types.is_numeric_dtype(X[c])]
     dropped_cols = sorted(set(X.columns) - set(numeric_cols))
-
     if dropped_cols:
         print(f"Ignoring non-numeric feature columns: {dropped_cols}")
 
@@ -128,18 +177,17 @@ def main() -> None:
 
     # Stats
     correct = int((y_pred == y_test).sum())
-    total = len(y_test)
-    accuracy = correct / total
+    total = int(len(y_test))
+    accuracy = correct / total if total else 0.0
 
     cm = confusion_matrix(y_test, y_pred, labels=[0, 1])
-    tn, fp, fn, tp = cm.ravel()
+    tn, fp, fn, tp = (int(cm[0, 0]), int(cm[0, 1]), int(cm[1, 0]), int(cm[1, 1]))
 
     # Output
     print("\n=== Decision Tree Evaluation ===")
     print(f"Training size:     {N_TRAIN}")
     print(f"Test size:         {total}")
     print(f"Features used:     {X.shape[1]}")
-    print(f"Tree max_depth:    {MAX_DEPTH}")
     print()
     print("=== Results ===")
     print(f"Correct:           {correct}/{total}")
