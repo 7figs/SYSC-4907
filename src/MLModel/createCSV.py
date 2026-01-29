@@ -18,123 +18,82 @@ db_path = const.DB_PATH
 movies = pd.read_csv(movies_path)
 credits = pd.read_csv(credits_path)
 
-# Select top 500 movies by vote_average
+# Select top 500 movies
 movies_top = movies.sort_values(by="vote_average", ascending=False).head(500).copy()
 
 # Merge movies and credits
-merged = movies_top.merge(
-    credits,
-    left_on="id",
-    right_on="movie_id",
-    how="left"
-)
+merged = movies_top.merge(credits, left_on="id", right_on="movie_id", how="left")
 
-# Clean up duplicate title columns after merge
 if "title_x" in merged.columns:
     merged = merged.rename(columns={"title_x": "title"})
-if "title_y" in merged.columns:
-    merged = merged.drop(columns=["title_y"])
 
 def parse_list_column(s):
-    """
-    Safely parse a string representation of a list of dicts.
-    Returns [] on errors or NaN.
-    """
-    if pd.isna(s):
-        return []
-    try:
-        return ast.literal_eval(s)
-    except (ValueError, SyntaxError):
-        return []
+    if pd.isna(s) or s == "": return []
+    try: return ast.literal_eval(s)
+    except: return []
 
-# Extract genre names
-merged["genre_names"] = merged["genres"].apply(
-    lambda x: [
-        d.get("name") for d in parse_list_column(x)
-        if isinstance(d, dict) and "name" in d
-    ]
-)
+# --- EXTRACTING METADATA ---
+merged["genre_names"] = merged["genres"].apply(lambda x: [d.get("name") for d in parse_list_column(x)])
+merged["cast_names"] = merged["cast"].apply(lambda x: [d.get("name") for d in parse_list_column(x)])
+merged["studio_names"] = merged["production_companies"].apply(lambda x: [d.get("name") for d in parse_list_column(x)])
+merged["keyword_list"] = merged["keywords"].apply(lambda x: [d.get("name") for d in parse_list_column(x)])
+merged["country_names"] = merged["production_countries"].apply(lambda x: [d.get("name") for d in parse_list_column(x)])
 
-# Extract cast names
-merged["cast_names"] = merged["cast"].apply(
-    lambda x: [
-        d.get("name") for d in parse_list_column(x)
-        if isinstance(d, dict) and "name" in d
-    ]
-)
+def get_director(crew_str):
+    crew = parse_list_column(crew_str)
+    for member in crew:
+        if member.get("job") == "Director":
+            return member.get("name")
+    return "Unknown"
 
-# Count actors (kept as-is)
-actor_counter = Counter(
-    name
-    for names in merged["cast_names"]
-    for name in names
-)
+merged["director_name"] = merged["crew"].apply(get_director)
 
-top_actors = [name for name, _ in actor_counter.most_common(10)]
+# --- IDENTIFYING TOP FEATURES ---
+# We use the top frequent items to avoid creating thousands of columns
+top_actors = [n for n, _ in Counter(n for l in merged["cast_names"] for n in l).most_common(15)]
+top_studios = [n for n, _ in Counter(n for l in merged["studio_names"] for n in l).most_common(15)]
+top_directors = [n for n, _ in Counter(merged["director_name"]).most_common(12)]
+top_keywords = [n for n, _ in Counter(n for l in merged["keyword_list"] for n in l).most_common(20)]
+top_countries = [n for n, _ in Counter(n for l in merged["country_names"] for n in l).most_common(5)]
+all_genres = sorted({n for l in merged["genre_names"] for n in l})
 
-# NEW: get ALL unique genres appearing in top 500 movies
-all_genres = sorted({
-    name
-    for names in merged["genre_names"]
-    for name in names
-})
+# --- FEATURE ENGINEERING (NO BUDGET/REVENUE) ---
 
-print("Top 10 actors:", top_actors)
-print("All genres in top 500 movies:", all_genres)
-print(f"Total unique genres: {len(all_genres)}")
+indicator_cols = []
 
-# Create column names
-actor_cols = [f"actor_{a.replace(' ', '_')}" for a in top_actors]
-genre_cols = [
-    f"genre_{g.replace(' ', '_').replace('-', '_')}"
-    for g in all_genres
-]
+def add_indicators(df, source_col, items, prefix):
+    for item in items:
+        col_name = f"{prefix}_{item.replace(' ', '_').replace('-', '_')}"
+        df[col_name] = df[source_col].apply(lambda x: int(item in x) if isinstance(x, list) else int(item == x))
+        indicator_cols.append(col_name)
 
-# Actor indicator columns
-for actor, col_name in zip(top_actors, actor_cols):
-    merged[col_name] = merged["cast_names"].apply(
-        lambda names, actor=actor: int(actor in names)
-    )
+add_indicators(merged, "cast_names", top_actors, "actor")
+add_indicators(merged, "genre_names", all_genres, "genre")
+add_indicators(merged, "studio_names", top_studios, "studio")
+add_indicators(merged, "director_name", top_directors, "dir")
+add_indicators(merged, "keyword_list", top_keywords, "kw")
+add_indicators(merged, "country_names", top_countries, "country")
 
-# Genre indicator columns
-for genre, col_name in zip(all_genres, genre_cols):
-    merged[col_name] = merged["genre_names"].apply(
-        lambda names, genre=genre: int(genre in names)
-    )
+# Language & Meta
+merged["is_english"] = (merged["original_language"] == "en").astype(int)
+merged["release_year"] = pd.to_datetime(merged["release_date"], errors="coerce").dt.year.fillna(0)
 
-# Extract release year
-merged["release_year"] = pd.to_datetime(
-    merged["release_date"], errors="coerce"
-).dt.year
+# --- FINAL SELECTION ---
+numeric_cols = ["popularity", "vote_count", "runtime", "release_year", "is_english"]
+base_info = ["title", "overview"]
 
-# Final dataframe
-base_cols = ["title", "overview", "release_year"]
-final_cols = base_cols + actor_cols + genre_cols
-final_df = merged[final_cols].copy()
+final_df = merged[base_info + numeric_cols + indicator_cols].copy()
 
-# Save to CSV
-output_path = "top500_movies_features.csv"
+# Clean up column names
+final_df.columns = [c.replace(".", "").replace(" ", "_") for c in final_df.columns]
+
+# Save and SQL Update
+output_path = "top500_content_features.csv"
 final_df.to_csv(output_path, index=False)
 
-print(f"Saved {len(final_df)} rows with {len(final_df.columns)} columns to {output_path}")
-print(final_df.head())
-
-# Clean column names (remove dots)
-df = pd.read_csv(output_path)
-df.columns = df.columns.str.replace(".", "", regex=False)
-df.to_csv(output_path, index=False)
-
-# Write to SQLite database
 conn = sqlite3.connect(db_path)
-cursor = conn.cursor()
-
-delete_query = f"DELETE FROM {const.MOVIES_TABLE};"
-cursor.execute(delete_query)
+final_df.to_sql(const.MOVIES_TABLE, conn, if_exists="replace", index=False)
 conn.commit()
 conn.close()
 
-df = pd.read_csv(output_path)
-conn = sqlite3.connect(db_path)
-df.to_sql(const.MOVIES_TABLE, conn, if_exists="replace", index=False)
-conn.commit()
-conn.close()
+print(f"File '{output_path}' created with {len(final_df.columns)} content-based features.")
