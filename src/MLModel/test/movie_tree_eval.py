@@ -2,10 +2,12 @@
 """
 Decision Tree evaluation on movie features + one or more users' preferences.
 
-Handles preferences.csv even if values are quoted, e.g.:
-  "movie_id","user_1","user_2"
-  "1","0","1"
-  "2","1","0"
+Now supports MULTI-RUN evaluation per user:
+- Keep N_TRAIN fixed (e.g., 100)
+- Run each user evaluation M_RUNS times with fresh random splits
+- Aggregate results for that user by summing confusion matrices across runs
+- Report per-user metrics from that aggregated confusion matrix
+- Then report aggregate stats across users, and average stats across users.
 
 Assumptions:
 - Both CSV files are in the SAME DIRECTORY as this script.
@@ -15,15 +17,6 @@ Assumptions:
     Rows ordered by movie_id 1..500
     Contains numeric features (year, binary genres, binary actors)
     May also contain text columns (title, overview) → automatically ignored
-
-Split behavior:
-- Each user is evaluated independently with its own stratified/proportional split,
-  because label balance can differ across users.
-
-Reporting:
-- Per-user stats
-- Aggregate stats: pooled by summing confusion matrices across users
-- Average stats: mean of per-user metrics (accuracy/recall/precision/FPR)
 """
 
 from __future__ import annotations
@@ -43,8 +36,9 @@ from sklearn.metrics import confusion_matrix
 PREFERENCES_CSV_NAME = "preferences.csv"
 FEATURES_CSV_NAME = "top500_movies_features.csv"
 
-N_TRAIN = 100                # number of movies used for training (per user)
-RANDOM_SEED = None           # None = random split every run
+N_TRAIN = 100                # number of movies used for training (per run, per user)
+M_RUNS = 100                 # number of runs per user (aggregate over these runs)
+RANDOM_SEED = None           # None = random each run; set int for reproducibility
 
 MAX_DEPTH = None             # e.g. 6 or None
 MIN_SAMPLES_LEAF = 1
@@ -114,7 +108,6 @@ def load_preferences(path: Path) -> tuple[pd.DataFrame, list[str]]:
 
     prefs["movie_id"] = clean_int_series(prefs["movie_id"], "movie_id")
 
-    # Clean and validate each label column
     for c in label_cols:
         prefs[c] = clean_int_series(prefs[c], c)
         invalid = ~prefs[c].isin([0, 1])
@@ -135,9 +128,6 @@ def stratified_train_indices(
     """
     Pick n_train indices such that the number of 0/1 labels in the sample
     is proportional to their counts in the full y (as closely as possible).
-
-    If exact proportional counts aren't possible (due to limited samples in a class),
-    this function clamps to what's available and fills the remainder from the other class.
     """
     if n_train < 1 or n_train >= len(y):
         raise ValueError("n_train must be between 1 and len(y)-1")
@@ -153,10 +143,9 @@ def stratified_train_indices(
         raise ValueError("Unexpected label indexing issue.")
 
     if n_ones == 0 or n_zeros == 0:
-        # Degenerate case: only one class exists; fall back to uniform sampling.
+        # Degenerate: only one class exists; fall back to uniform sampling.
         return rng.choice(np.arange(len(y)), size=n_train, replace=False)
 
-    # Target proportional counts
     p_one = n_ones / n_total
     n_train_ones = int(round(n_train * p_one))
     n_train_zeros = n_train - n_train_ones
@@ -168,11 +157,6 @@ def stratified_train_indices(
     if n_train_zeros > n_zeros:
         n_train_zeros = n_zeros
         n_train_ones = n_train - n_train_zeros
-
-    if n_train_ones < 0 or n_train_zeros < 0:
-        raise ValueError("Could not compute a valid stratified split.")
-    if n_train_ones + n_train_zeros != n_train:
-        raise ValueError("Stratified allocation failed to sum to n_train.")
 
     train_ones = (
         rng.choice(idx_ones, size=n_train_ones, replace=False)
@@ -213,6 +197,8 @@ def metrics_from_confusion(tn: int, fp: int, fn: int, tp: int) -> dict:
 def main() -> None:
     if not (1 <= N_TRAIN <= 499):
         raise ValueError("N_TRAIN must be between 1 and 499")
+    if M_RUNS < 1:
+        raise ValueError("M_RUNS must be >= 1")
 
     prefs_path = resolve_path(PREFERENCES_CSV_NAME)
     feats_path = resolve_path(FEATURES_CSV_NAME)
@@ -222,11 +208,9 @@ def main() -> None:
     if not feats_path.exists():
         raise FileNotFoundError(feats_path)
 
-    # Load data
     features = load_features(feats_path)
     prefs, label_cols = load_preferences(prefs_path)
 
-    # Merge once (keep all labels)
     df = features.merge(prefs, on="movie_id", how="inner")
     if df.shape[0] < 2:
         raise ValueError("After merge, too few rows. Check that movie_id values match between files.")
@@ -234,11 +218,9 @@ def main() -> None:
     if not (1 <= N_TRAIN <= (len(df) - 1)):
         raise ValueError(f"N_TRAIN must be between 1 and {len(df)-1} for this merged dataset.")
 
-    # Build X once
     feature_cols = [c for c in df.columns if c not in (["movie_id"] + label_cols)]
     X_all = df[feature_cols]
 
-    # Ignore non-numeric feature columns (e.g., title, overview)
     numeric_cols = [c for c in X_all.columns if pd.api.types.is_numeric_dtype(X_all[c])]
     dropped_cols = sorted(set(X_all.columns) - set(numeric_cols))
     if dropped_cols:
@@ -246,60 +228,65 @@ def main() -> None:
 
     X_all = X_all[numeric_cols]
 
-    # Output header
-    print("\n=== Decision Tree Evaluation (Multi-User) ===")
-    print(f"Users found:          {len(label_cols)} -> {label_cols}")
-    print(f"Training size/user:   {N_TRAIN}")
-    print(f"Rows (after merge):   {len(df)}")
-    print(f"Features used:        {X_all.shape[1]}")
+    print("\n=== Decision Tree Evaluation (Multi-User, Multi-Run) ===")
+    print(f"Users found:            {len(label_cols)} -> {label_cols}")
+    print(f"Training size/run/user: {N_TRAIN}")
+    print(f"Runs per user (M):      {M_RUNS}")
+    print(f"Rows (after merge):     {len(df)}")
+    print(f"Features used:          {X_all.shape[1]}")
     print()
 
     rng = np.random.default_rng(RANDOM_SEED)
     all_idx = np.arange(len(df))
 
-    # Accumulators for aggregate + averages
+    # Aggregate across users (pooled confusion, after each user has already been pooled across runs)
     agg_tn = agg_fp = agg_fn = agg_tp = 0
     per_user_metrics: list[dict] = []
 
     for user_col in label_cols:
         y = df[user_col].to_numpy(dtype=int)
 
-        # Split indices per user (label distribution may differ)
-        train_idx = stratified_train_indices(y=y, n_train=N_TRAIN, rng=rng)
-        test_idx = np.setdiff1d(all_idx, train_idx)
-
-        X_train, y_train = X_all.iloc[train_idx], y[train_idx]
-        X_test, y_test = X_all.iloc[test_idx], y[test_idx]
-
-        # Train
-        clf = DecisionTreeClassifier(
-            random_state=None,
-            max_depth=MAX_DEPTH,
-            min_samples_leaf=MIN_SAMPLES_LEAF,
-        )
-        clf.fit(X_train, y_train)
-
-        # Predict
-        y_pred = clf.predict(X_test)
-
-        # Confusion + metrics
-        cm = confusion_matrix(y_test, y_pred, labels=[0, 1])
-        tn, fp, fn, tp = (int(cm[0, 0]), int(cm[0, 1]), int(cm[1, 0]), int(cm[1, 1]))
-        m = metrics_from_confusion(tn, fp, fn, tp)
-
-        # Label balance info
+        # Label balance info (same every run)
         full_ones = int((y == 1).sum())
         full_zeros = int((y == 0).sum())
-        train_ones = int((y_train == 1).sum())
-        train_zeros = int((y_train == 0).sum())
 
-        # Print per-user block
+        # Pool confusion across M runs for this user
+        user_tn = user_fp = user_fn = user_tp = 0
+        user_test_total = 0
+
+        for _ in range(M_RUNS):
+            train_idx = stratified_train_indices(y=y, n_train=N_TRAIN, rng=rng)
+            test_idx = np.setdiff1d(all_idx, train_idx)
+
+            X_train, y_train = X_all.iloc[train_idx], y[train_idx]
+            X_test, y_test = X_all.iloc[test_idx], y[test_idx]
+
+            clf = DecisionTreeClassifier(
+                random_state=None,
+                max_depth=MAX_DEPTH,
+                min_samples_leaf=MIN_SAMPLES_LEAF,
+            )
+            clf.fit(X_train, y_train)
+            y_pred = clf.predict(X_test)
+
+            cm = confusion_matrix(y_test, y_pred, labels=[0, 1])
+            tn, fp, fn, tp = (int(cm[0, 0]), int(cm[0, 1]), int(cm[1, 0]), int(cm[1, 1]))
+
+            user_tn += tn
+            user_fp += fp
+            user_fn += fn
+            user_tp += tp
+            user_test_total += int(cm.sum())
+
+        # Metrics from aggregated confusion for this user
+        m = metrics_from_confusion(user_tn, user_fp, user_fn, user_tp)
+
         print(f"--- User: {user_col} ---")
         print("Label Balance")
         print(f"  Full dataset:        ones={full_ones}, zeros={full_zeros}")
-        print(f"  Training subset:     ones={train_ones}, zeros={train_zeros}")
-        print("Results")
-        print(f"  Test size:           {m['total']}")
+        print("Multi-Run Results (Aggregated over runs)")
+        print(f"  Runs:                {M_RUNS}")
+        print(f"  Total test examples: {m['total']}  (should equal {M_RUNS} * (N_total - N_TRAIN) = {M_RUNS} * ({len(df)} - {N_TRAIN}) = {M_RUNS*(len(df)-N_TRAIN)})")
         print(f"  Correct:             {m['correct']}/{m['total']}")
         print(f"  Accuracy:            {m['accuracy']:.4f}")
         print(f"  Recall:              {m['recall']:.4f}")
@@ -310,15 +297,15 @@ def main() -> None:
         print(f"  True Positives:      {m['tp']}")
         print(f"  True Negatives:      {m['tn']}")
         print("  Confusion Matrix (rows=true [0,1], cols=pred [0,1]):")
-        print(f"  {cm[0,0]}  {cm[0,1]}")
-        print(f"  {cm[1,0]}  {cm[1,1]}")
+        print(f"  {user_tn}  {user_fp}")
+        print(f"  {user_fn}  {user_tp}")
         print()
 
-        # Accumulate aggregate
-        agg_tn += tn
-        agg_fp += fp
-        agg_fn += fn
-        agg_tp += tp
+        # Add to overall aggregate (pooled across users)
+        agg_tn += user_tn
+        agg_fp += user_fp
+        agg_fn += user_fn
+        agg_tp += user_tp
 
         per_user_metrics.append({
             "user": user_col,
@@ -329,10 +316,10 @@ def main() -> None:
             "test_size": m["total"],
         })
 
-    # Aggregate (pooled confusion)
+    # Overall aggregate (pooled across users)
     agg = metrics_from_confusion(agg_tn, agg_fp, agg_fn, agg_tp)
 
-    # Average (mean of per-user metrics)
+    # Average across users (mean of per-user metrics)
     avg_accuracy = float(np.mean([d["accuracy"] for d in per_user_metrics])) if per_user_metrics else 0.0
     avg_recall = float(np.mean([d["recall"] for d in per_user_metrics])) if per_user_metrics else 0.0
     avg_precision = float(np.mean([d["precision"] for d in per_user_metrics])) if per_user_metrics else 0.0
