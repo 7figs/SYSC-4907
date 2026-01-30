@@ -38,7 +38,7 @@ FEATURES_CSV_NAME = "top500_movies_features.csv"
 
 N_TRAIN = 100                # number of movies used for training (per run, per user)
 M_RUNS = 100                 # number of runs per user (aggregate over these runs)
-RANDOM_SEED = 42           # None = random each run; set int for reproducibility
+RANDOM_SEED = None           # None = random each run; set int for reproducibility
 
 MAX_DEPTH = None             # e.g. 6 or None
 MIN_SAMPLES_LEAF = 0.2
@@ -262,7 +262,7 @@ def main() -> None:
             X_test, y_test = X_all.iloc[test_idx], y[test_idx]
 
             clf = DecisionTreeClassifier(
-                random_state=None,
+                random_state=42,
                 max_depth=MAX_DEPTH,
                 min_samples_leaf=MIN_SAMPLES_LEAF,
                 class_weight={0.0: 1, 1.0: 3}
