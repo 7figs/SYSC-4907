@@ -9,6 +9,12 @@ Now supports MULTI-RUN evaluation per user:
 - Report per-user metrics from that aggregated confusion matrix
 - Then report aggregate stats across users, and average stats across users.
 
+Adds: p@k (precision@k) "user-vector recommender" evaluation per run:
+- For each run, compute user vector = sum(training vectors), where dislikes are subtracted
+- Score all non-training movies by dot(user_vector, movie_vector)
+- Take top k (k=10), count how many are actually liked (p)
+- Aggregate p and k across runs, report p@k per user, plus pooled + average across users
+
 Assumptions:
 - Both CSV files are in the SAME DIRECTORY as this script.
 - Preferences CSV format:
@@ -42,6 +48,9 @@ RANDOM_SEED = None           # None = random each run; set int for reproducibili
 
 MAX_DEPTH = None             # e.g. 6 or None
 MIN_SAMPLES_LEAF = 0.2
+
+# p@k settings
+P_AT_K = 10                  # k is always 10 as requested
 
 
 # =========================
@@ -190,6 +199,43 @@ def metrics_from_confusion(tn: int, fp: int, fn: int, tp: int) -> dict:
     }
 
 
+def precision_at_k_user_vector(
+    X_all_np: np.ndarray,
+    y_all: np.ndarray,
+    train_idx: np.ndarray,
+    k: int,
+) -> tuple[int, int, float]:
+    """
+    Build user vector from training examples:
+      user_vec = sum( +x_i for likes ) + sum( -x_i for dislikes )
+    Score every non-training movie by dot(user_vec, x_j), take top k.
+    Return (p, k, p_at_k).
+    """
+    if k < 1:
+        raise ValueError("k must be >= 1")
+
+    # weights: like (1) -> +1, dislike (0) -> -1
+    w = np.where(y_all[train_idx] == 1, 1.0, -1.0)  # shape (N_TRAIN,)
+    user_vec = (X_all_np[train_idx] * w[:, None]).sum(axis=0)  # shape (D,)
+
+    all_idx = np.arange(X_all_np.shape[0])
+    cand_idx = np.setdiff1d(all_idx, train_idx, assume_unique=False)
+
+    if cand_idx.size == 0:
+        return 0, k, 0.0
+
+    scores = X_all_np[cand_idx] @ user_vec  # dot product for each candidate
+
+    k_eff = min(k, cand_idx.size)
+    # argpartition for efficiency, then sort those top candidates
+    top_part = np.argpartition(scores, -k_eff)[-k_eff:]
+    top_sorted_local = top_part[np.argsort(scores[top_part])[::-1]]
+    top_idx = cand_idx[top_sorted_local]
+
+    p = int((y_all[top_idx] == 1).sum())
+    return p, k_eff, (p / k_eff) if k_eff else 0.0
+
+
 # =========================
 # MAIN
 # =========================
@@ -228,12 +274,16 @@ def main() -> None:
 
     X_all = X_all[numeric_cols]
 
+    # For fast dot products in p@k
+    X_all_np = X_all.to_numpy(dtype=float)
+
     print("\n=== Decision Tree Evaluation (Multi-User, Multi-Run) ===")
     print(f"Users found:            {len(label_cols)} -> {label_cols}")
     print(f"Training size/run/user: {N_TRAIN}")
     print(f"Runs per user (M):      {M_RUNS}")
     print(f"Rows (after merge):     {len(df)}")
     print(f"Features used:          {X_all.shape[1]}")
+    print(f"p@k enabled:            k={P_AT_K}")
     print()
 
     rng = np.random.default_rng(RANDOM_SEED)
@@ -241,6 +291,11 @@ def main() -> None:
 
     # Aggregate across users (pooled confusion, after each user has already been pooled across runs)
     agg_tn = agg_fp = agg_fn = agg_tp = 0
+
+    # Aggregate p@k across users (pooled)
+    agg_p_sum = 0
+    agg_k_sum = 0
+
     per_user_metrics: list[dict] = []
 
     for user_col in label_cols:
@@ -252,7 +307,10 @@ def main() -> None:
 
         # Pool confusion across M runs for this user
         user_tn = user_fp = user_fn = user_tp = 0
-        user_test_total = 0
+
+        # Pool p@k across M runs for this user
+        user_p_sum = 0
+        user_k_sum = 0
 
         for _ in range(M_RUNS):
             train_idx = stratified_train_indices(y=y, n_train=N_TRAIN, rng=rng)
@@ -277,10 +335,23 @@ def main() -> None:
             user_fp += fp
             user_fn += fn
             user_tp += tp
-            user_test_total += int(cm.sum())
+
+            # ---- p@k computation (k=10) using the special "user vector" method ----
+            p, k_eff, _p_at_k = precision_at_k_user_vector(
+                X_all_np=X_all_np,
+                y_all=y,
+                train_idx=train_idx,
+                k=P_AT_K,
+            )
+            user_p_sum += p
+            user_k_sum += k_eff
 
         # Metrics from aggregated confusion for this user
         m = metrics_from_confusion(user_tn, user_fp, user_fn, user_tp)
+
+        # p@k from aggregated p and k
+        user_p_at_k = (user_p_sum / user_k_sum) if user_k_sum else 0.0
+        user_avg_p_per_run = (user_p_sum / M_RUNS) if M_RUNS else 0.0
 
         print(f"--- User: {user_col} ---")
         print("Label Balance")
@@ -300,6 +371,12 @@ def main() -> None:
         print("  Confusion Matrix (rows=true [0,1], cols=pred [0,1]):")
         print(f"  {user_tn}  {user_fp}")
         print(f"  {user_fn}  {user_tp}")
+        print("p@k (User-Vector Recommender, Aggregated over runs)")
+        print(f"  k (fixed):           {P_AT_K}")
+        print(f"  Total p (liked in top-k across runs): {user_p_sum}")
+        print(f"  Total k (top-k counted across runs):  {user_k_sum}  (should equal {M_RUNS}*{min(P_AT_K, len(df)-N_TRAIN)})")
+        print(f"  p@{P_AT_K}:            {user_p_at_k:.4f}")
+        print(f"  Avg p per run:       {user_avg_p_per_run:.2f} / {P_AT_K}")
         print()
 
         # Add to overall aggregate (pooled across users)
@@ -308,6 +385,9 @@ def main() -> None:
         agg_fn += user_fn
         agg_tp += user_tp
 
+        agg_p_sum += user_p_sum
+        agg_k_sum += user_k_sum
+
         per_user_metrics.append({
             "user": user_col,
             "accuracy": m["accuracy"],
@@ -315,16 +395,23 @@ def main() -> None:
             "precision": m["precision"],
             "fpr": m["fpr"],
             "test_size": m["total"],
+            "p_at_10": user_p_at_k,
+            "p_sum": user_p_sum,
+            "k_sum": user_k_sum,
         })
 
     # Overall aggregate (pooled across users)
     agg = metrics_from_confusion(agg_tn, agg_fp, agg_fn, agg_tp)
+
+    # Overall pooled p@k across users
+    agg_p_at_k = (agg_p_sum / agg_k_sum) if agg_k_sum else 0.0
 
     # Average across users (mean of per-user metrics)
     avg_accuracy = float(np.mean([d["accuracy"] for d in per_user_metrics])) if per_user_metrics else 0.0
     avg_recall = float(np.mean([d["recall"] for d in per_user_metrics])) if per_user_metrics else 0.0
     avg_precision = float(np.mean([d["precision"] for d in per_user_metrics])) if per_user_metrics else 0.0
     avg_fpr = float(np.mean([d["fpr"] for d in per_user_metrics])) if per_user_metrics else 0.0
+    avg_p_at_k = float(np.mean([d["p_at_10"] for d in per_user_metrics])) if per_user_metrics else 0.0
 
     print("=== Aggregate (Pooled Across All Users) ===")
     print(f"Total test examples:  {agg['total']}")
@@ -339,6 +426,11 @@ def main() -> None:
     print(f"True Negatives:       {agg['tn']}")
     print("Confusion Matrix (rows=true [0,1], cols=pred [0,1]):")
     print(np.array([[agg_tn, agg_fp], [agg_fn, agg_tp]], dtype=int))
+    print("p@k (User-Vector Recommender, Pooled Across All Users)")
+    print(f"  k (fixed):          {P_AT_K}")
+    print(f"  Total p:            {agg_p_sum}")
+    print(f"  Total k:            {agg_k_sum}")
+    print(f"  p@{P_AT_K}:           {agg_p_at_k:.4f}")
     print()
 
     print("=== Average (Mean of Per-User Metrics) ===")
@@ -347,6 +439,7 @@ def main() -> None:
     print(f"Avg Recall:           {avg_recall:.4f}")
     print(f"Avg Precision:        {avg_precision:.4f}")
     print(f"Avg False Pos Rate:   {avg_fpr:.4f}")
+    print(f"Avg p@{P_AT_K}:         {avg_p_at_k:.4f}")
 
 
 if __name__ == "__main__":
