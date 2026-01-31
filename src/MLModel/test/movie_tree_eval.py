@@ -42,6 +42,11 @@ from sklearn.metrics import confusion_matrix
 PREFERENCES_CSV_NAME = "preferences.csv"
 FEATURES_CSV_NAME = "top500_movies_features.csv"
 
+# NEW: toggle balanced (proportional/stratified) sampling for the N_TRAIN set
+# True  -> keep label proportions similar to full user dataset
+# False -> choose N_TRAIN uniformly at random (no balancing)
+BALANCED_TRAIN_SAMPLING = True
+
 N_TRAIN = 100                # number of movies used for training (per run, per user)
 M_RUNS = 100                 # number of runs per user (aggregate over these runs)
 RANDOM_SEED = None           # None = random each run; set int for reproducibility
@@ -181,6 +186,25 @@ def stratified_train_indices(
     return train_idx
 
 
+def choose_train_indices(
+    y: np.ndarray,
+    n_train: int,
+    rng: np.random.Generator,
+    balanced: bool,
+) -> np.ndarray:
+    """
+    Wrapper to toggle between:
+      - balanced=True: stratified proportional sampling
+      - balanced=False: uniform random sampling
+    """
+    if balanced:
+        return stratified_train_indices(y=y, n_train=n_train, rng=rng)
+    # Uniform sampling across all items
+    if n_train < 1 or n_train >= len(y):
+        raise ValueError("n_train must be between 1 and len(y)-1")
+    return rng.choice(np.arange(len(y)), size=n_train, replace=False)
+
+
 def metrics_from_confusion(tn: int, fp: int, fn: int, tp: int) -> dict:
     total = tn + fp + fn + tp
     correct = tn + tp
@@ -284,6 +308,7 @@ def main() -> None:
     print(f"Rows (after merge):     {len(df)}")
     print(f"Features used:          {X_all.shape[1]}")
     print(f"p@k enabled:            k={P_AT_K}")
+    print(f"Balanced sampling:      {BALANCED_TRAIN_SAMPLING}")
     print()
 
     rng = np.random.default_rng(RANDOM_SEED)
@@ -313,7 +338,12 @@ def main() -> None:
         user_k_sum = 0
 
         for _ in range(M_RUNS):
-            train_idx = stratified_train_indices(y=y, n_train=N_TRAIN, rng=rng)
+            train_idx = choose_train_indices(
+                y=y,
+                n_train=N_TRAIN,
+                rng=rng,
+                balanced=BALANCED_TRAIN_SAMPLING,
+            )
             test_idx = np.setdiff1d(all_idx, train_idx)
 
             X_train, y_train = X_all.iloc[train_idx], y[train_idx]

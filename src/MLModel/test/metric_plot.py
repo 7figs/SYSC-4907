@@ -34,6 +34,11 @@ from sklearn.metrics import confusion_matrix
 PREFERENCES_CSV_NAME = "preferences.csv"
 FEATURES_CSV_NAME = "top500_movies_features.csv"
 
+# NEW: toggle balanced (proportional/stratified) sampling for the N_TRAIN set
+# True  -> keep label proportions similar to full user dataset
+# False -> choose N_TRAIN uniformly at random (no balancing)
+BALANCED_TRAIN_SAMPLING = True
+
 N_MIN = 1
 N_MAX = 100
 
@@ -163,6 +168,24 @@ def stratified_train_indices(
     return train_idx
 
 
+def choose_train_indices(
+    y: np.ndarray,
+    n_train: int,
+    rng: np.random.Generator,
+    balanced: bool,
+) -> np.ndarray:
+    """
+    Wrapper to toggle between:
+      - balanced=True: stratified proportional sampling
+      - balanced=False: uniform random sampling
+    """
+    if balanced:
+        return stratified_train_indices(y=y, n_train=n_train, rng=rng)
+    if n_train < 1 or n_train >= len(y):
+        raise ValueError("n_train must be between 1 and len(y)-1")
+    return rng.choice(np.arange(len(y)), size=n_train, replace=False)
+
+
 def metrics_from_confusion(tn: int, fp: int, fn: int, tp: int) -> dict:
     total = tn + fp + fn + tp
     correct = tn + tp
@@ -256,7 +279,12 @@ def evaluate_for_n(
         user_k_sum = 0
 
         for _ in range(m_runs):
-            train_idx = stratified_train_indices(y=y, n_train=n_train, rng=rng)
+            train_idx = choose_train_indices(
+                y=y,
+                n_train=n_train,
+                rng=rng,
+                balanced=BALANCED_TRAIN_SAMPLING,
+            )
             test_idx = np.setdiff1d(all_idx, train_idx)
 
             X_train, y_train = X_all.iloc[train_idx], y[train_idx]
@@ -383,6 +411,8 @@ def main() -> None:
 
     outdir = Path(__file__).resolve().parent / PLOTS_SUBFOLDER
     outdir.mkdir(parents=True, exist_ok=True)
+
+    print(f"Balanced sampling: {BALANCED_TRAIN_SAMPLING}\n")
 
     results: list[dict] = []
     for n_train in range(n_min, n_max + 1):
