@@ -30,12 +30,18 @@
                 <button id="save-change-button"><h1><span class="fa-solid fa-floppy-disk"></span> Save</h1></button>
             </div>
         </div>
-        <div class="watch-history">
-            <div>
-                <h1>Watch History</h1>
-                <hr>
+        <div class="options-content">
+            <div class="settings-tabs">
+                <button class="settings-option-button selected" id="watch-history-button"><h1>Watch History</h1></button>
+                <button class="settings-option-button" id="statistics-button"><h1>Statistics</h1></button>
             </div>
-            <div id="history" class="history">
+            <div id="watch-history-content" class="watch-history-content">
+                <div id="history" class="history"></div>
+            </div>
+            <div id="statistics-content" class="statistics-content hidden">
+                <div id="stats" class="stats">
+                    <canvas id="myChart"></canvas>
+                </div>
             </div>
         </div>
         <div class="settings-button-group">
@@ -46,5 +52,6 @@
     <div id="toast" class="toast"></div>
 {% endblock %}
 {% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
     <script type="module" src = "{{ url_for('static', filename='js/settings.js') }}"></script>
 {% endblock %}

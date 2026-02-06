@@ -112,12 +112,8 @@
     cursor: pointer;
 }
 
-.watch-history {
-    display: grid;
-    grid: 5% 95% / 100%;
-}
-
-.history {
+.watch-history-content {
+    height: 95%;
     overflow-y: scroll;
 }
 
@@ -195,4 +191,16 @@
     padding: 5px 10px;
     background-color: var(--danger-color);
     color: var(--dark-font-color);
+}
+
+.settings-option-button {
+    margin-right: 5px;
+    background: none;
+    color: var(--dark-font-color);
+    border: none;
+    cursor: pointer;
+}
+
+.selected {
+    background-color: var(--alt-color);
 }

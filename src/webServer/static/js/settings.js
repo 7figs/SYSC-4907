@@ -18,12 +18,30 @@ let save_button = document.getElementById("save-change-button");
 let delete_profile_button = document.getElementById("delete-profile-button");
 let confirmation_modal = document.getElementById("confirmation-modal");
 let cancel_delete_button = document.getElementById("cancel-delete-button");
-let confrim_delete_button = document.getElementById("confirm-delete-button");
+let confirm_delete_button = document.getElementById("confirm-delete-button");
 let user_index;
 let toast = document.getElementById("toast");
 let download_button = document.getElementById("download-data-button");
+let watch_history_button = document.getElementById("watch-history-button");
+let statistics_button = document.getElementById("statistics-button");
+let watch_history_section = document.getElementById("watch-history-content");
+let statistics_section = document.getElementById("statistics-content");
 
 let current_user = profiles[userId];
+
+statistics_button.addEventListener("click", () => {
+    statistics_section.classList.remove("hidden");
+    watch_history_section.classList.add("hidden");
+    statistics_button.classList.add("selected");
+    watch_history_button.classList.remove("selected");
+});
+
+watch_history_button.addEventListener("click", () => {
+    statistics_section.classList.add("hidden");
+    watch_history_section.classList.remove("hidden");
+    statistics_button.classList.remove("selected");
+    watch_history_button.classList.add("selected");
+});
 
 download_button.addEventListener("click", () => {
     download(JSON.stringify(current_user), `${current_user.name}.json`, "text/plain");
@@ -93,7 +111,7 @@ cancel_delete_button.addEventListener("click", () => {
     confirmation_modal.classList.add("hidden");
 });
 
-confrim_delete_button.addEventListener("click", () => {
+confirm_delete_button.addEventListener("click", () => {
     profiles.splice(user_index, 1);
     for (let i = 0; i < profiles.length; i++) {
         profiles[i].id = i;
@@ -269,4 +287,27 @@ async function load_watch_history() {
         watch_history.appendChild(log);
     }
 }
+async function create_plots() {
+    await load_movies();
+    const ctx = document.getElementById("myChart");
+    new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      datasets: [{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
 load_watch_history();
+create_plots();
