@@ -30,7 +30,7 @@ from sklearn.metrics import confusion_matrix
 # =========================
 
 PREFERENCES_CSV_NAME = "preferences.csv"
-FEATURES_CSV_NAME = "top500_movies_features.csv"
+FEATURES_CSV_NAME = "movies_features.csv"
 
 # Toggle balanced (proportional/stratified) sampling for the N_TRAIN set
 BALANCED_TRAIN_SAMPLING = True
