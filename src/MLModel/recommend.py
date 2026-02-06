@@ -27,7 +27,7 @@ def recommend(tree, user_vector, too_soon):
         result = clf.predict([list(movie[2:])])
         if result:
             recommendations.append([movies.index(movie)+1, movie[0]])
-            top_recommendations.append([movies.index(movie)+1, movie[0], movie[13:]])
+            top_recommendations.append([movies.index(movie)+1, movie[0], movie[22:42]])
     conn.close()
 
     random.shuffle(top_recommendations)

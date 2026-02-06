@@ -72,17 +72,17 @@ def createTree(likes, dislikes):
 
     fig, ax = plt.subplots(figsize=(10, 8), dpi=300)
 
-    tree.plot_tree(
-        clf,
-        ax=ax,
-        impurity=False,
-        filled=True,
-        feature_names=FEATURES,
-        class_names=CLASSES
-    )
+    # tree.plot_tree(
+    #     clf,
+    #     ax=ax,
+    #     impurity=False,
+    #     filled=True,
+    #     feature_names=FEATURES,
+    #     class_names=CLASSES
+    # )
 
-    fig.savefig("test.png", bbox_inches="tight")
-    plt.close(fig)
+    # fig.savefig("test.png", bbox_inches="tight")
+    # plt.close(fig)
 
     clf = pickle.dumps(clf)
     clf = base64.urlsafe_b64encode(clf).decode("ascii")
