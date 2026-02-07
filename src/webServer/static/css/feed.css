@@ -144,3 +144,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
+nav {
+    background-color: var(--dark-bg-color);
+}

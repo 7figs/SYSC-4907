@@ -220,6 +220,7 @@ async function setup_page() {
 
         let user_vector = await fetch(`/user-vector?h=${JSON.stringify(id_history)}&p=${JSON.stringify(preferences)}&d=${JSON.stringify(days)}`);
         user_vector = await user_vector.json();
+        console.log(user_vector);
         users[user_index].vector = user_vector;
         localStorage.removeItem("users");
         localStorage.setItem("users", JSON.stringify(users));
@@ -246,7 +247,8 @@ async function setup_page() {
         }
         let tree = await fetch(`/tree?l=${JSON.stringify(new_like)}&d=${JSON.stringify(new_dislike)}`);
         tree = await tree.json();
-        users[user_index].tree = tree;
+        users[user_index].tree = tree[0];
+        users[user_index].figure = tree[1];
         localStorage.removeItem("users");
         localStorage.setItem("users", JSON.stringify(users));
     }
@@ -309,7 +311,7 @@ async function play_video() {
     }
     });
 
-    let tree = users[user_index].tree[0];
+    let tree = users[user_index].tree;
     let user_vector = users[user_index].vector;
     if (!user_vector) {
         user_vector = [];

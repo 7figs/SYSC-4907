@@ -1,4 +1,5 @@
 import messages from "../messages.json" with {type: "json"};
+import genres from "../genres.json" with {type: "json"};
 
 async function load_movies() {
     await fetch_movies();
@@ -24,16 +25,20 @@ let toast = document.getElementById("toast");
 let download_button = document.getElementById("download-data-button");
 let watch_history_button = document.getElementById("watch-history-button");
 let statistics_button = document.getElementById("statistics-button");
+let model_button = document.getElementById("model-button");
 let watch_history_section = document.getElementById("watch-history-content");
 let statistics_section = document.getElementById("statistics-content");
+let model_section = document.getElementById("model-content");
 
 let current_user = profiles[userId];
 
 statistics_button.addEventListener("click", () => {
     statistics_section.classList.remove("hidden");
     watch_history_section.classList.add("hidden");
+    model_section.classList.add("hidden");
     statistics_button.classList.add("selected");
     watch_history_button.classList.remove("selected");
+    model_button.classList.remove("selected");
 });
 
 watch_history_button.addEventListener("click", () => {
@@ -41,6 +46,17 @@ watch_history_button.addEventListener("click", () => {
     watch_history_section.classList.remove("hidden");
     statistics_button.classList.remove("selected");
     watch_history_button.classList.add("selected");
+    model_button.classList.remove("selected");
+    model_section.classList.add("hidden");
+});
+
+model_button.addEventListener("click", () => {
+    statistics_section.classList.add("hidden");
+    watch_history_section.classList.add("hidden");
+    statistics_button.classList.remove("selected");
+    watch_history_button.classList.remove("selected");
+    model_button.classList.add("selected");
+    model_section.classList.remove("hidden");
 });
 
 download_button.addEventListener("click", () => {
@@ -289,25 +305,53 @@ async function load_watch_history() {
 }
 async function create_plots() {
     await load_movies();
+    Chart.defaults.color = '#ffffff';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.25)';
     const ctx = document.getElementById("myChart");
     new Chart(ctx, {
-    type: 'bar',
+    type: "radar",
     data: {
-      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      labels: genres,
       datasets: [{
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        borderWidth: 1
+        data: (JSON.parse(localStorage.getItem("users"))[user_index].vector) ? (JSON.parse(localStorage.getItem("users"))[user_index].vector) : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        backgroundColor: `${color}22`,
+        borderColor: color,
+        pointBackgroundColor: color,
+        pointBorderColor: color,
+        pointHoverBackgroundColor: color,
+        pointHoverBorderColor: color,
       }]
     },
     options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            r: {
+                pointLabels: {
+                    font: {
+                        size: 16
+                    }
+                },
+                ticks: {
+                    showLabelBackdrop: false,
+                    font: {
+                        size: 16
+                    }
+                }
+            }
+        }   
     }
   });
 }
+async function populate_model() {
+    let test = document.getElementById("model");
+    test.src = `data:image/png;base64,${JSON.parse(localStorage.getItem("users"))[user_index].figure}`;
+}
 load_watch_history();
 create_plots();
+populate_model();

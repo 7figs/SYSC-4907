@@ -136,7 +136,8 @@ async function create_profile() {
             let user = {
                 "id": users.length,
                 "name": username.value,
-                "tree": tree,
+                "tree": tree[0],
+                "figure": tree[1],
                 "watch_history": [],
                 "colour": color.value,
                 "initial_like": like_list,
@@ -150,7 +151,8 @@ async function create_profile() {
             let user = {
                 "id": 0,
                 "name": username.value,
-                "tree": tree,
+                "tree": tree[0],
+                "figure": tree[1],
                 "watch_history": [],
                 "colour": color.value,
                 "initial_like": like_list,

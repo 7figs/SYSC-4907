@@ -7,45 +7,12 @@ import sqlite3
 import sys
 import os
 import base64
+from io import BytesIO
+from matplotlib.patches import Rectangle, FancyArrowPatch
 
-FEATURES = [
-    "release_year",
-    "actor_Samuel_L_Jackson",
-    "actor_Morgan_Freeman",
-    "actor_John_Ratzenberger",
-    "actor_Tom_Hanks",
-    "actor_Robert_De_Niro",
-    "actor_Harrison_Ford",
-    "actor_Leonardo_DiCaprio",
-    "actor_Matt_Damon",
-    "actor_Brad_Pitt",
-    "actor_Christain_Bale",
-    "genre_Action",
-    "genre_Adventure",
-    "genre_Animation",
-    "genre_Comedy",
-    "genre_Crime",
-    "genre_Documentary",
-    "genre_Drama",
-    "genre_Family",
-    "genre_Fantasy",
-    "genre_Foreign",
-    "genre_History",
-    "genre_genre_Horror",
-    "genre_Music",
-    "genre_Mystery",
-    "genre_Romance",
-    "genre_Science_Fiction",
-    "genre_TV_Movie",
-    "genre_Thriller",
-    "genre_War",
-    "genre_Western"
-]
-
-CLASSES = [
-    "No Recommend",
-    "Recommend"
-]
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, parent_dir)
+import const
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, parent_dir)
@@ -67,23 +34,40 @@ def createTree(likes, dislikes):
         X.append(list(test[0][2:]))
         Y.append(0)
     conn.close()
-    clf = tree.DecisionTreeClassifier(random_state=42)
+    clf = tree.DecisionTreeClassifier(
+        random_state= 42,
+        max_depth= None,
+        min_samples_leaf= 0.2,
+        class_weight= {0.0: 1, 1.0: 3},
+    )
     clf = clf.fit(X, Y)
 
     fig, ax = plt.subplots(figsize=(10, 8), dpi=300)
 
-    # tree.plot_tree(
-    #     clf,
-    #     ax=ax,
-    #     impurity=False,
-    #     filled=True,
-    #     feature_names=FEATURES,
-    #     class_names=CLASSES
-    # )
+    tree.export_graphviz(clf)
+    tree.plot_tree(
+        clf,
+        ax=ax,
+        impurity=False,
+        filled=True,
+        feature_names=const.FEATURES,
+        class_names=const.CLASSES
+    )
+    for patch in ax.patches:
+        if isinstance(patch, plt.FancyBboxPatch):
+            patch.set_edgecolor("white")
+            patch.set_linewidth(2)
+    
+    for line in ax.get_lines():
+        line.set_color("white")
+        line.set_linewidth(2)
 
-    # fig.savefig("test.png", bbox_inches="tight")
-    # plt.close(fig)
+    buf = BytesIO()
+    fig.savefig(buf, format="png", bbox_inches="tight", transparent=True)
+    plt.close(fig)
+    buf.seek(0)
 
+    img_base64 = base64.b64encode(buf.read()).decode("utf-8")
     clf = pickle.dumps(clf)
     clf = base64.urlsafe_b64encode(clf).decode("ascii")
-    return [clf]
+    return [clf, img_base64]

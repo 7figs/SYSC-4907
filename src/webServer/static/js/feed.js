@@ -102,7 +102,7 @@ search_bar.addEventListener("input", () => {
 });
 
 async function populate_feed() {
-    let tree = profiles[user_index].tree[0];
+    let tree = profiles[user_index].tree;
     let user_vector = profiles[user_index].vector;
     if (!user_vector) {
         user_vector = [];
