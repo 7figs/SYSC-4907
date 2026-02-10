@@ -29,6 +29,9 @@ let model_button = document.getElementById("model-button");
 let watch_history_section = document.getElementById("watch-history-content");
 let statistics_section = document.getElementById("statistics-content");
 let model_section = document.getElementById("model-content");
+let sync_button = document.getElementById("sync-profiles");
+let username_password_popup = document.getElementById("username-password-container");
+let username_password_close = document.getElementById("username-password-close");
 
 let current_user = profiles[userId];
 
@@ -140,6 +143,14 @@ confirm_delete_button.addEventListener("click", () => {
     }
     localStorage.setItem("show_toast", JSON.stringify(message));
     location.assign("/");
+});
+
+sync_button.addEventListener("click", () => {
+    username_password_popup.classList.remove("hidden");
+});
+
+username_password_close.addEventListener("click", () => {
+    username_password_popup.classList.add("hidden");
 });
 
 async function load_watch_history() {

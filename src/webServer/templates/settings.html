@@ -4,8 +4,33 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
 {% endblock %}
 {% block content %}
+    <div id="username-password-container" class="username-password-container hidden">
+        <div class="username-password-popup">
+            <div class="choose-profile-popup-header">
+                <h1>Please Enter Username and Password</h1>
+                <button id="username-password-close">
+                    <img src="../static/images/svg/cross.svg" alt="close">
+                </button>
+            </div>
+            <hr>
+            <div class="username-password">
+                <div class="username">
+                    <h2 class="username-password-input-title">Username: </h2>
+                    <input type="text">
+                </div>
+                <div class="password">
+                    <h2 class="username-password-input-title">Password: </h2>
+                    <input type="password">
+                </div>
+                <button class="sync-profiles-button"><h1>Sync Profiles</h1></button>
+            </div>
+        </div>
+    </div>
     <nav>
         <a href="/"><p>Product Name Here</p></a>
+        <button id="sync-profiles" title="Sync Profiles">
+            <span class="fa-solid fa-cloud"></span>
+        </button>
     </nav>
     <div id="confirmation-modal" class="hidden confirmation-modal">
         <div class="modal">

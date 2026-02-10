@@ -139,3 +139,13 @@ nav>ul {
     justify-content: space-evenly;
     list-style-type: none;
 }
+
+::-webkit-scrollbar {
+    width: 5px;
+    background: var(--dark-bg-color); 
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--dark-font-color); 
+    border-radius: 25px;
+}

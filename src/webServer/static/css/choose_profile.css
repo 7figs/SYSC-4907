@@ -17,6 +17,25 @@
     border-radius: 25px;
 }
 
+.username-password-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.603);
+    z-index: 3;
+    position: fixed;
+}
+
+.username-password-popup {
+    align-self: center;
+    width: 60vw;
+    height: 80vh;
+    padding: 20px;
+    background-color: var(--dark-bg-color);
+    border-radius: 25px;
+}
+
 #add-profile-button {
     margin-top: 20px;
     font-weight: bold;
@@ -41,7 +60,8 @@
 }
 
 #choose-profile-close,
-#add-profile-close {
+#add-profile-close,
+#username-password-close {
     background-color: var(--dark-bg-color);
     width: 40px;
     height: 40px;
@@ -50,9 +70,26 @@
 }
 
 #choose-profile-close>img,
-#add-profile-close>img {
+#add-profile-close>img,
+#username-password-close>img {
     aspect-ratio: 1/1;
     width: 90%;
+}
+
+#load-profiles {
+    cursor: pointer;
+    color: var(--dark-font-color);
+    background-color: var(--primary-color);
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.choose-profile-button-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .profiles {
@@ -104,13 +141,18 @@
 }
 
 .create-new-profile,
-.upload-profile {
+.upload-profile,
+.username-password {
     width: 100%;
     height: 100%;
     display: grid;
     justify-content: center;
     align-items: center;
     cursor: pointer;
+}
+
+.username-password {
+    cursor: default !important;
 }
 
 .upload-profile input {
@@ -133,4 +175,28 @@
 .pfp>img {
     aspect-ratio: 1/1;
     width: 100%;
+}
+
+.username, .password {
+    display: flex;
+}
+
+.username>input, .password>input {
+    border: 1px solid var(--dark-font-color);
+    border-radius: 8px;
+    padding: 5px;
+    color: var(--dark-font-color);
+    background-color: var(--dark-bg-color);
+}
+
+.username-password-input-title {
+    margin-right: 20px;
+}
+
+.load-profiles-button {
+    color: var(--dark-font-color);
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
 }

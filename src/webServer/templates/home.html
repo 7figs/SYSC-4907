@@ -41,15 +41,42 @@
         <div class="choose-profile-popup">
             <div class="choose-profile-popup-header">
                 <h1>Choose Profile</h1>
-                <button id="choose-profile-close">
-                    <img src="../static/images/svg/cross.svg" alt="close">
-                </button>
+                <div class="choose-profile-button-group">
+                    <button id="load-profiles" title="Load Profiles">
+                        <span class="fa-solid fa-cloud"></span>
+                    </button>
+                    <button id="choose-profile-close">
+                        <img src="../static/images/svg/cross.svg" alt="close">
+                    </button>
+                </div>
             </div>
             <hr>
             <div id="profiles" class="profiles">
                 <button id="add-profile-button">
                     <img src="../static/images/svg/plus.svg" alt="add">
                 </button>
+            </div>
+        </div>
+    </div>
+    <div id="username-password-container" class="username-password-container hidden">
+        <div class="username-password-popup">
+            <div class="choose-profile-popup-header">
+                <h1>Please Enter Username and Password</h1>
+                <button id="username-password-close">
+                    <img src="../static/images/svg/cross.svg" alt="close">
+                </button>
+            </div>
+            <hr>
+            <div class="username-password">
+                <div class="username">
+                    <h2 class="username-password-input-title">Username: </h2>
+                    <input type="text">
+                </div>
+                <div class="password">
+                    <h2 class="username-password-input-title">Password: </h2>
+                    <input type="password">
+                </div>
+                <button class="load-profiles-button"><h1>Load Profiles</h1></button>
             </div>
         </div>
     </div>

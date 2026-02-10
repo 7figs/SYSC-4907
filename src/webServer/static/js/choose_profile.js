@@ -9,6 +9,9 @@ let create_new_profile = document.getElementById("create-new-profile");
 let profiles_container = document.getElementById("profiles");
 let uploaded_profile = document.getElementById("upload_profile");
 let submit_button = document.getElementById("submit_upload");
+let load_profiles_button = document.getElementById("load-profiles");
+let load_profiles_popup = document.getElementById("username-password-container");
+let load_profiles_close = document.getElementById("username-password-close");
 
 uploaded_profile.addEventListener("change", function() {
     submit_button.disabled = !this.value;
@@ -96,4 +99,12 @@ add_profile_close.addEventListener("click", () => {
 
 create_new_profile.addEventListener("click", () => {
     location.assign("/start");
+});
+
+load_profiles_button.addEventListener("click", () => {
+    load_profiles_popup.classList.remove("hidden");
+});
+
+load_profiles_close.addEventListener("click", () => {
+    load_profiles_popup.classList.add("hidden");
 });
