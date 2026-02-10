@@ -45,12 +45,18 @@
     height: 50px;
 }
 
+.options-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
 .settings-button-group {
+    border-top: 1px solid var(--dark-font-color);
     display: flex;
     justify-content: space-evenly;
     align-items: center;
     margin-top: 20px;
-    border-top: 1px solid var(--dark-font-color);
 }
 
 .settings-button-group>button {
@@ -113,8 +119,10 @@
 }
 
 .watch-history-content {
-    height: 95%;
+    position: relative;
     overflow-y: scroll;
+    flex: 1 1 auto;
+    align-self: stretch;
 }
 
 .log {
@@ -207,18 +215,15 @@
 }
 
 .statistics-content {
-    height: 95%;
-}
-
-.stats {
-    height: 95%;
-    margin-top: 2.5%;
+    display: inline;
     position: relative;
+    flex: 1 1 auto;
+    align-self: stretch;
 }
 
 #myChart {
-    width: 100% !important;
-    height: 100% !important;
+    height: 90%;
+    margin-top: 2.5%;
 }
 
 .settings-tabs {
@@ -226,11 +231,15 @@
 }
 
 .model-content {
-    height: 95%;
+    position: relative;
+    display: inline;
+    flex: 1 1 auto;
+    align-self: stretch;
 }
 
 .model {
     width: 100%;
-    height: 100%;
+    height: 80%;
     object-fit: contain;
+    background-color: var(--alt-color);
 }

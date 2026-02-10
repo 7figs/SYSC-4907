@@ -10,13 +10,13 @@ async function load_movies() {
 async function setup_page() {
     await load_movies();
     let pfp = document.getElementById("pfp");
-    let dorpdown_options = document.getElementById("dropdown-options");
+    let dropdown_options = document.getElementById("dropdown-options");
     let settings = document.getElementById("settings");
     let switch_profiles = document.getElementById("switch-profiles");
     let choose_profile_container = document.getElementById("choose-profile-container");
 
     pfp.addEventListener("click", () => {
-        dorpdown_options.classList.toggle("hidden");
+        dropdown_options.classList.toggle("hidden");
     });
 
     switch_profiles.addEventListener("click", () => {
@@ -108,6 +108,62 @@ async function setup_page() {
         if (history.length == 0) {
             history.unshift(obj);
         }
+
+        let id_history = [];
+        let days = [];
+        let preferences = [];
+
+        if (history.length > 2) {
+            for (let i = 1; i < history.length; i++) {
+                id_history.push(history[i].id);
+                let current_time = Date.now();
+                let time_dif = current_time - history[i].timestamp;
+                time_dif = time_dif / 8640000;
+                days.push(time_dif);
+                if (history[i].opinion == "like") {
+                    preferences.push(1);
+                }
+                else if (history[i].opinion == "dislike") {
+                    preferences.push(-1);
+                }
+                else if (history[i].guess == "like") {
+                    preferences.push(1);
+                }
+                else if (history[i].guess == "dislike") {
+                    preferences.push(-1);
+                }
+            }
+
+            let user_vector = await fetch(`/user-vector?h=${JSON.stringify(id_history)}&p=${JSON.stringify(preferences)}&d=${JSON.stringify(days)}`);
+            user_vector = await user_vector.json();
+            console.log(user_vector);
+            profiles[user_index].vector = user_vector;
+        }
+
+        if (history.length >= 3 && history.length % 3 == 0) {
+            let new_like = profiles[user_index].initial_like;
+            let new_dislike = profiles[user_index].initial_dislike;
+            for (let i = 0; i < history.length - 1; i++) {
+                if (history[i].opinion == "like") {
+                    new_like.push(history[i].id);
+                }
+                if (history[i].opinion == "dislike") {
+                    new_dislike.push(history[i].id);
+                }
+                if (history[i].opinion == "unknown") {
+                    if (history[i].guess == "like") {
+                        new_like.push(history[i].id);
+                    }
+                    if (history[i].guess == "dislike") {
+                        new_dislike.push(history[i].id);
+                    }
+                }
+            }
+            let tree = await fetch(`/tree?l=${JSON.stringify(new_like)}&d=${JSON.stringify(new_dislike)}`);
+            tree = await tree.json();
+            profiles[user_index].tree = tree[0];
+            profiles[user_index].figure = tree[1];
+        }
     }
     else {
         history = [];
@@ -190,68 +246,6 @@ async function setup_page() {
         localStorage.removeItem("users");
         localStorage.setItem("users", JSON.stringify(profiles));
     });
-
-    let users = JSON.parse(localStorage.getItem("users"));
-
-    let id_history = [];
-    let days = [];
-    let preferences = [];
-
-    if (history.length > 2) {
-        for (let i = 1; i < history.length; i++) {
-            id_history.push(history[i].id);
-            let current_time = Date.now();
-            let time_dif = current_time - history[i].timestamp;
-            time_dif = time_dif / 8640000;
-            days.push(time_dif);
-            if (history[i].opinion == "like") {
-                preferences.push(1);
-            }
-            else if (history[i].opinion == "dislike") {
-                preferences.push(-1);
-            }
-            else if (history[i].guess == "like") {
-                preferences.push(1);
-            }
-            else if (history[i].guess == "dislike") {
-                preferences.push(-1);
-            }
-        }
-
-        let user_vector = await fetch(`/user-vector?h=${JSON.stringify(id_history)}&p=${JSON.stringify(preferences)}&d=${JSON.stringify(days)}`);
-        user_vector = await user_vector.json();
-        console.log(user_vector);
-        users[user_index].vector = user_vector;
-        localStorage.removeItem("users");
-        localStorage.setItem("users", JSON.stringify(users));
-    }
-
-    if (history.length >= 3 && history.length % 3 == 0) {
-        let new_like = users[userId].initial_like;
-        let new_dislike = users[userId].initial_dislike;
-        for (let i = 0; i < history.length - 1; i++) {
-            if (history[i].opinion == "like") {
-                new_like.push(history[i].id);
-            }
-            if (history[i].opinion == "dislike") {
-                new_dislike.push(history[i].id);
-            }
-            if (history[i].opinion == "unknown") {
-                if (history[i].guess == "like") {
-                    new_like.push(history[i].id);
-                }
-                if (history[i].guess == "dislike") {
-                    new_dislike.push(history[i].id);
-                }
-            }
-        }
-        let tree = await fetch(`/tree?l=${JSON.stringify(new_like)}&d=${JSON.stringify(new_dislike)}`);
-        tree = await tree.json();
-        users[user_index].tree = tree[0];
-        users[user_index].figure = tree[1];
-        localStorage.removeItem("users");
-        localStorage.setItem("users", JSON.stringify(users));
-    }
 }
 
 async function play_video() {
