@@ -1,5 +1,6 @@
 DB_PATH = "../db.db"
 MOVIES_TABLE = "movies"
+USERS_TABLE = "users"
 FEATURES = [
     "Popularity",
     "Vote Count",

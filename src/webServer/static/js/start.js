@@ -4,3 +4,38 @@ async function fetch_movies() {
     movies = await movies.json();
     localStorage.setItem("movies", JSON.stringify(movies));
 }
+
+function deriveKey(password, salt) {
+    return CryptoJS.PBKDF2(password, salt, {
+        keySize: 256 / 32,
+        iterations: 100000
+    });
+}
+
+function encryptData(data, password) {
+    let salt = CryptoJS.lib.WordArray.random(16);
+    let key = deriveKey(password, salt);
+
+    let encrypted = CryptoJS.AES.encrypt(
+        JSON.stringify(data),
+        key.toString()
+    );
+
+    return {
+        salt: salt.toString(),
+        ciphertext: encrypted.toString()
+    };
+}
+
+function decryptData(ciphertext, saltHex, password) {
+    let salt = CryptoJS.enc.Hex.parse(saltHex);
+    let key = deriveKey(password, salt);
+
+    let decrypted = CryptoJS.AES.decrypt(ciphertext, key.toString());
+
+    return JSON.parse(
+        decrypted.toString(CryptoJS.enc.Utf8)
+    );
+}
+
+

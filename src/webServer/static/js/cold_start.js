@@ -17,6 +17,12 @@ let username = document.getElementById("name");
 let toast = document.getElementById("toast");
 let pfp = document.getElementById("pfp");
 let color = document.getElementById("color");
+let second_panel_redirect = document.getElementById("second-panel-redirect");
+let second_panel_back = document.getElementById("second-panel-back");
+let initial_panel = document.getElementById("initial-panel");
+let second_panel = document.getElementById("second-panel");
+let password = document.getElementById("password");
+let username_input = document.getElementById("username");
 
 color.addEventListener("input", () => {
     pfp.style.backgroundColor = color.value;
@@ -24,6 +30,21 @@ color.addEventListener("input", () => {
 
 async function generate_random_movies() {
     await fetch_movies();
+
+    let users = JSON.parse(localStorage.getItem("users"));
+    if (users && users.length > 0) {
+        second_panel_back.classList.add("hidden");
+        second_panel_redirect.classList.remove("hidden");
+        initial_panel.classList.add("hidden");
+        second_panel.classList.remove("hidden");
+    }
+    else {
+        second_panel_back.classList.remove("hidden");
+        second_panel_redirect.classList.add("hidden");
+        initial_panel.classList.remove("hidden");
+        second_panel.classList.add("hidden");
+    }
+
     movies = JSON.parse(localStorage.getItem("movies"));
     load_new_randoms = !((localStorage.getItem("random_like")) && (localStorage.getItem("random_dislike")));
     let add_movie = true;
@@ -127,11 +148,13 @@ async function add_eventlisteners() {
 add_eventlisteners();
 
 async function create_profile() {
+    let success = false;
     if (username.value != "") {
+        success = true;
         let tree = await fetch(`/tree?l=${JSON.stringify(like_list)}&d=${JSON.stringify(dislike_list)}`);
         tree = await tree.json();
         let users = localStorage.getItem("users");
-        if (users) {
+        if (users && users.length > 0) {
             users = JSON.parse(users);
             let user = {
                 "id": users.length,
@@ -148,28 +171,43 @@ async function create_profile() {
             localStorage.setItem("users", JSON.stringify(users));
         }
         else {
-            let user = {
-                "id": 0,
-                "name": username.value,
-                "tree": tree[0],
-                "figure": tree[1],
-                "watch_history": [],
-                "colour": color.value,
-                "initial_like": like_list,
-                "initial_dislike": dislike_list
+            if (username_input.value != "" && password.value != "") {
+                let user = {
+                    "id": 0,
+                    "name": username.value,
+                    "tree": tree[0],
+                    "figure": tree[1],
+                    "watch_history": [],
+                    "colour": color.value,
+                    "initial_like": like_list,
+                    "initial_dislike": dislike_list
+                }
+                let id = `${username_input.value}${password.value}`;
+                id = sha256(id);
+                localStorage.setItem("users", JSON.stringify([user]));
+                localStorage.setItem("id", JSON.stringify(id));
             }
-            localStorage.setItem("users", JSON.stringify([user]));
+            else {
+                success = false;
+                toast.innerHTML = messages.cold_start_fail;
+                toast.classList.add("toast-error");
+                toast.classList.add("toast-show");
+                setTimeout(function(){ toast.classList.remove("toast-show") }, 2900);
+            }
         }
-        localStorage.removeItem("dislikes");
-        localStorage.removeItem("likes");
-        localStorage.removeItem("random_dislike");
-        localStorage.removeItem("random_like");
-        let message = {
-            "type": 1,
-            "message": messages.cold_start_success
+        if (success) {
+            
+            localStorage.removeItem("dislikes");
+            localStorage.removeItem("likes");
+            localStorage.removeItem("random_dislike");
+            localStorage.removeItem("random_like");
+            let message = {
+                "type": 1,
+                "message": messages.cold_start_success
+            }
+            localStorage.setItem("show_toast", JSON.stringify(message));
+            location.assign("/");
         }
-        localStorage.setItem("show_toast", JSON.stringify(message));
-        location.assign("/");
     }
     else {
         toast.innerHTML = messages.cold_start_fail;

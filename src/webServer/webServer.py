@@ -7,6 +7,7 @@ parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 target_dir = os.path.abspath(os.path.join("../MLModel"))
 sys.path.insert(0, parent_dir)
 import const
+import syncData as db_sync
 sys.path.insert(0, target_dir)
 import createTree as ml_create_tree
 import recommend as ml_recommend
@@ -84,6 +85,17 @@ def user_vector():
     days = json.loads(days)
     user_vector = ml_user_vector.createUserVector(history, preferences, days)
     return user_vector
+
+@app.route("/sync", methods=["GET"])
+def sync():
+    data = (request.args.get("d"))
+    id = (request.args.get("i"))
+    data = json.loads(data)
+    id = json.loads(id)
+    print(id)
+    print(data)
+    result = db_sync.syncData(data, id)
+    return result
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

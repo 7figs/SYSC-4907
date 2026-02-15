@@ -4,17 +4,31 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cold_start.css') }}">
 {% endblock %}
 {% block content %}
-    <div class="panel">
-        <label for="name"><h1>Please Enter a Username, and Profile Colour: </h1></label>
+    <div id="initial-panel" class="panel">
+        <div>
+            <h1>Please Enter a Username and Password for Data Sync</h1>
+        </div>
         <div class="name-and-color">
-            <input id="name" type="text" class="input-field" placeholder="Username" autocomplete="off">
+            <input id="username" type="text" class="input-field" placeholder="Username" autocomplete="off">
+            <input id="password" type="password" class="input-field" placeholder="Password" autocomplete="off">
+        </div>
+        <div class="panel-button-group">
+            <button onclick="window.location.href='/'" class="panel-button cancel-btn">Cancel</button>
+            <button class="panel-button submit-btn">Next &#8594;</button>
+        </div>
+    </div>
+    <div id="second-panel" class="hidden panel">
+        <label for="name"><h1>Please Enter a Profile Name, and Profile Colour: </h1></label>
+        <div class="name-and-color">
+            <input id="name" type="text" class="input-field" placeholder="Profile Name" autocomplete="off">
             <div class="color-section">
                 <div id="pfp" class="pfp"><img src="../static/images/svg/profile.svg" alt="profile"></div>
                 <input id="color" type="color">
             </div>
         </div>
         <div class="panel-button-group">
-            <button onclick="window.location.href='/'" class="panel-button cancel-btn">Cancel</button>
+            <button id="second-panel-back" type="button" class="panel-button back-btn">&#8592; Back</button>
+            <button id="second-panel-redirect" onclick="window.location.href='/'" class="hidden panel-button cancel-btn">Cancel</button>
             <button class="panel-button submit-btn">Next &#8594;</button>
         </div>
     </div>

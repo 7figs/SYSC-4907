@@ -32,6 +32,9 @@ let model_section = document.getElementById("model-content");
 let sync_button = document.getElementById("sync-profiles");
 let username_password_popup = document.getElementById("username-password-container");
 let username_password_close = document.getElementById("username-password-close");
+let sync_profiles_button = document.getElementById("sync-profiles-button");
+let username_input = document.getElementById("username-input");
+let password_input = document.getElementById("password-input");
 
 let current_user = profiles[userId];
 
@@ -136,7 +139,9 @@ confirm_delete_button.addEventListener("click", () => {
         profiles[i].id = i;
     }
     localStorage.removeItem("users");
-    localStorage.setItem("users", JSON.stringify(profiles));
+    if (profiles.length > 0) {
+        localStorage.setItem("users", JSON.stringify(profiles));
+    }
     let message = {
         "type": 1,
         "message": messages.settings_delete_profile_success
@@ -151,6 +156,39 @@ sync_button.addEventListener("click", () => {
 
 username_password_close.addEventListener("click", () => {
     username_password_popup.classList.add("hidden");
+});
+
+sync_profiles_button.addEventListener("click", async () => {
+    let password = password_input.value;
+    let username = username_input.value;
+    if (password.length >= 5 && username.length > 1) {
+        password = sha256(password);
+        let id = `${username}${password}`;
+        let data = JSON.parse(localStorage.getItem("users"));
+        let result = await fetch(`/sync?i=${JSON.stringify(id)}&d=${JSON.stringify(data)}`);
+        result = await result.json();
+        if (result) {
+            toast.innerHTML = messages.settings_profiles_synced;
+            toast.classList.add("toast-success");
+            toast.classList.remove("toast-error");
+            toast.classList.add("toast-show");
+            setTimeout(function(){ toast.classList.remove("toast-show") }, 2900);
+        }
+        else {
+            toast.innerHTML = messages.settings_something_went_wrong;
+            toast.classList.remove("toast-success");
+            toast.classList.add("toast-error");
+            toast.classList.add("toast-show");
+            setTimeout(function(){ toast.classList.remove("toast-show") }, 2900);
+        }
+    }
+    else {
+        toast.innerHTML = messages.settings_username_password_invalid;
+        toast.classList.remove("toast-success");
+        toast.classList.add("toast-error");
+        toast.classList.add("toast-show");
+        setTimeout(function(){ toast.classList.remove("toast-show") }, 2900);
+    }
 });
 
 async function load_watch_history() {

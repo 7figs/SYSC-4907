@@ -4,6 +4,9 @@
     "settings_fail": "&#10005; Error. Please Provide a Username",
     "settings_profile_success": "&#10003; Success. Profile Updated",
     "settings_delete_profile_success": "&#10003; Success. Profile Deleted",
+    "settings_username_password_invalid": "&#10005; Error. Invalid Username or Password",
+    "settings_something_went_wrong": "&#10005; Error. Something Went Wrong",
+    "settings_profiles_synced": "&#10003; Success. Profiles Synced",
     "profile_upload_success": "&#10003; Success. Profile Uploaded",
     "profile_upload_fail": "&#10005; Error. Failed to Upload Profile"
 }
