@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import sqlite3
 import json
 import sys
@@ -8,6 +8,8 @@ target_dir = os.path.abspath(os.path.join("../MLModel"))
 sys.path.insert(0, parent_dir)
 import const
 import syncData as db_sync
+import checkSalt as check_salt
+import loadData as db_load
 sys.path.insert(0, target_dir)
 import createTree as ml_create_tree
 import recommend as ml_recommend
@@ -86,16 +88,25 @@ def user_vector():
     user_vector = ml_user_vector.createUserVector(history, preferences, days)
     return user_vector
 
-@app.route("/sync", methods=["GET"])
+@app.route("/sync", methods=["POST"])
 def sync():
-    data = (request.args.get("d"))
+    data = request.get_json()
+    id = data["id"]
+    salt = data["salt"]
+    blob = data["data"]
+    db_sync.syncData(blob, id, salt)
+    return jsonify({"status": "ok"})
+
+@app.route("/salt", methods=["GET"])
+def salt():
+    salt = check_salt.checkSalt()
+    return jsonify({"salt": salt})
+
+@app.route("/load", methods=["GET"])
+def load():
     id = (request.args.get("i"))
-    data = json.loads(data)
-    id = json.loads(id)
-    print(id)
-    print(data)
-    result = db_sync.syncData(data, id)
-    return result
+    data = db_load.loadData(id)
+    return jsonify(data)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

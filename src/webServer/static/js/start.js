@@ -12,25 +12,16 @@ function deriveKey(password, salt) {
     });
 }
 
-function encryptData(data, password) {
-    let salt = CryptoJS.lib.WordArray.random(16);
-    let key = deriveKey(password, salt);
-
+function encryptData(data, key) {
     let encrypted = CryptoJS.AES.encrypt(
         JSON.stringify(data),
         key.toString()
     );
 
-    return {
-        salt: salt.toString(),
-        ciphertext: encrypted.toString()
-    };
+    return encrypted.toString();
 }
 
-function decryptData(ciphertext, saltHex, password) {
-    let salt = CryptoJS.enc.Hex.parse(saltHex);
-    let key = deriveKey(password, salt);
-
+function decryptData(ciphertext, key) {
     let decrypted = CryptoJS.AES.decrypt(ciphertext, key.toString());
 
     return JSON.parse(

@@ -182,10 +182,10 @@ async function create_profile() {
                     "initial_like": like_list,
                     "initial_dislike": dislike_list
                 }
-                let id = `${username_input.value}${password.value}`;
+                let id = `${username_input.value}`;
                 id = sha256(id);
                 localStorage.setItem("users", JSON.stringify([user]));
-                localStorage.setItem("id", JSON.stringify(id));
+                localStorage.setItem("id", id);
             }
             else {
                 success = false;
@@ -196,7 +196,32 @@ async function create_profile() {
             }
         }
         if (success) {
+            let salt = await fetch("/salt");
+            salt = await salt.json();
+            salt = salt.salt;
+            let user_password = password.value;
+            let key = await deriveKey(user_password, salt);
+            let data = localStorage.getItem("users");
+            let blob = await encryptData(data, key);
+            let id = localStorage.getItem("id");
+            let payload = {
+                id: id,
+                salt: salt,
+                data: blob
+            };
+            let sync_result = await fetch("/sync", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
             
+            localStorage.removeItem("salt");
+            localStorage.setItem("salt", salt);
+            localStorage.removeItem("key");
+            localStorage.setItem("key", key);
+
             localStorage.removeItem("dislikes");
             localStorage.removeItem("likes");
             localStorage.removeItem("random_dislike");

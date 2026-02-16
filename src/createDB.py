@@ -3,7 +3,7 @@ import sqlite3
 conn = sqlite3.connect("db.db")
 cursor = conn.cursor()
 cursor.execute("""
-        DROP TABLE temp
+        DELETE FROM users
     """)
 conn.commit()
 conn.close()

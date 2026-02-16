@@ -246,6 +246,24 @@ async function setup_page() {
         localStorage.removeItem("users");
         localStorage.setItem("users", JSON.stringify(profiles));
     });
+    let key = localStorage.getItem("key");
+    let data = localStorage.getItem("users");
+    let blob = await encryptData(data, key);
+    let id = localStorage.getItem("id");
+    let salt = localStorage.getItem("salt");
+    let payload = {
+        id: id,
+        salt: salt,
+        data: blob
+    };
+    console.log(payload);
+    let sync_result = await fetch("/sync", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    });
 }
 
 async function play_video() {

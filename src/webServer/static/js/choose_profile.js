@@ -12,6 +12,9 @@ let submit_button = document.getElementById("submit_upload");
 let load_profiles_button = document.getElementById("load-profiles");
 let load_profiles_popup = document.getElementById("username-password-container");
 let load_profiles_close = document.getElementById("username-password-close");
+let load_data_button = document.getElementById("load-data-button");
+let password = document.getElementById("password");
+let username = document.getElementById("username");
 
 uploaded_profile.addEventListener("change", function() {
     submit_button.disabled = !this.value;
@@ -45,6 +48,27 @@ if (profiles) {
         profiles_container.appendChild(line);
     }
 }
+
+load_data_button.addEventListener("click", async () => {
+    let password_value = password.value;
+    let username_value = username.value;
+    let id = `${username_value}`;
+    id = sha256(id);
+    let data = await fetch(`/load?i=${id}`);
+    data = await data.json();
+    console.log(data)
+    let blob = data[1];
+    let salt = data[0];
+    let key = deriveKey(password_value, salt);
+    let user_data = decryptData(blob, key);
+    localStorage.removeItem("users");
+    localStorage.setItem("users", user_data);
+    localStorage.removeItem("id");
+    localStorage.setItem("id", id);
+    localStorage.removeItem("key");
+    localStorage.setItem("key", key);
+    location.assign("/");
+});
 
 submit_button.addEventListener("click", () => {
     let file = uploaded_profile.files[0];
