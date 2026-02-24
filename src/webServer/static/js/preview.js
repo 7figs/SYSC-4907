@@ -1,7 +1,7 @@
 let movies;
 async function load_movies() {
     await fetch_movies();
-    movies = JSON.parse(localStorage.getItem("movies"));
+    movies = JSON.parse(sessionStorage.getItem("movies"));
 }
 
 async function preview_movie() {
@@ -33,7 +33,7 @@ async function preview_movie() {
     let color;
     let profile_exists = false;
     let movie_exists = false;
-    let profiles = JSON.parse(localStorage.getItem("users"));
+    let profiles = JSON.parse(sessionStorage.getItem("users"));
 
     let movie_index = -1;
 

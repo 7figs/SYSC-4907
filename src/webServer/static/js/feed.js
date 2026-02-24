@@ -9,14 +9,14 @@ let settings = document.getElementById("settings");
 let switch_profiles = document.getElementById("switch-profiles");
 let num_other_movies = 30;
 let user_index;
-let profiles = JSON.parse(localStorage.getItem("users"));
+let profiles = JSON.parse(sessionStorage.getItem("users"));
 let choose_profile_container = document.getElementById("choose-profile-container");
 
 async function load_movies() {
-    localStorage.removeItem("movies");
+    sessionStorage.removeItem("movies");
     let movies = await fetch("/movies");
     movies = await movies.json();
-    localStorage.setItem("movies", JSON.stringify(movies));
+    sessionStorage.setItem("movies", JSON.stringify(movies));
 }
 
 
@@ -50,7 +50,7 @@ let results_panel = document.getElementById("results-panel");
 async function populate_panel() {
     await load_movies();
     
-    let movies_list = JSON.parse(localStorage.getItem("movies"));
+    let movies_list = JSON.parse(sessionStorage.getItem("movies"));
 
     for (let i = 0; i < movies_list.length; i++) {
         let name = movies_list[i][1];
@@ -145,7 +145,7 @@ async function populate_feed() {
         });
         recommended_section.appendChild(movie);
     }
-    let movies = JSON.parse(localStorage.getItem("movies"));
+    let movies = JSON.parse(sessionStorage.getItem("movies"));
     let other_movies = [];
     while (other_movies.length < num_other_movies) {
             let add_movie = true;

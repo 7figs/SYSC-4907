@@ -11,7 +11,7 @@ let userId = Number(segments[segments.length - 1]);
 let color;
 let profile_exists = false;
 let pfp = document.getElementById("pfp");
-let profiles = JSON.parse(localStorage.getItem("users"));
+let profiles = JSON.parse(sessionStorage.getItem("users"));
 let name_field = document.getElementById("username");
 let color_field = document.getElementById("profile-color");
 let cancel_button = document.getElementById("cancel-change-button");
@@ -115,8 +115,8 @@ save_button.addEventListener("click", () => {
     else {
         profiles[user_index].name = name_field.value;
         profiles[user_index].colour = color_field.value;
-        localStorage.removeItem("users");
-        localStorage.setItem("users",JSON.stringify(profiles));
+        sessionStorage.removeItem("users");
+        sessionStorage.setItem("users",JSON.stringify(profiles));
         toast.innerHTML = messages.settings_profile_success;
         toast.classList.remove("toast-error");
         toast.classList.add("toast-success");
@@ -138,15 +138,15 @@ confirm_delete_button.addEventListener("click", () => {
     for (let i = 0; i < profiles.length; i++) {
         profiles[i].id = i;
     }
-    localStorage.removeItem("users");
+    sessionStorage.removeItem("users");
     if (profiles.length > 0) {
-        localStorage.setItem("users", JSON.stringify(profiles));
+        sessionStorage.setItem("users", JSON.stringify(profiles));
     }
     let message = {
         "type": 1,
         "message": messages.settings_delete_profile_success
     }
-    localStorage.setItem("show_toast", JSON.stringify(message));
+    sessionStorage.setItem("show_toast", JSON.stringify(message));
     location.assign("/");
 });
 
@@ -164,7 +164,7 @@ sync_profiles_button.addEventListener("click", async () => {
     if (password.length >= 5 && username.length > 1) {
         password = sha256(password);
         let id = `${username}${password}`;
-        let data = JSON.parse(localStorage.getItem("users"));
+        let data = JSON.parse(sessionStorage.getItem("users"));
         let result = await fetch(`/sync?i=${JSON.stringify(id)}&d=${JSON.stringify(data)}`);
         result = await result.json();
         if (result) {
@@ -300,8 +300,8 @@ async function load_watch_history() {
                     }
                 }
             }
-            localStorage.removeItem("users");
-            localStorage.setItem("users", JSON.stringify(profiles));
+            sessionStorage.removeItem("users");
+            sessionStorage.setItem("users", JSON.stringify(profiles));
         });
 
         dislike_button.addEventListener("click", () => {
@@ -329,15 +329,15 @@ async function load_watch_history() {
                     }
                 }
             }
-            localStorage.removeItem("users");
-            localStorage.setItem("users", JSON.stringify(profiles));
+            sessionStorage.removeItem("users");
+            sessionStorage.setItem("users", JSON.stringify(profiles));
         });
 
         delete_button.addEventListener("click", () => {
             let index = delete_button.getAttribute("data-id");
             history.splice(index, 1);
-            localStorage.removeItem("users");
-            localStorage.setItem("users", JSON.stringify(profiles));
+            sessionStorage.removeItem("users");
+            sessionStorage.setItem("users", JSON.stringify(profiles));
             delete_button.parentElement.parentElement.parentElement.remove();
         });
 
@@ -362,7 +362,7 @@ async function create_plots() {
     data: {
       labels: genres,
       datasets: [{
-        data: (JSON.parse(localStorage.getItem("users"))[user_index].vector) ? (JSON.parse(localStorage.getItem("users"))[user_index].vector) : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        data: (JSON.parse(sessionStorage.getItem("users"))[user_index].vector) ? (JSON.parse(sessionStorage.getItem("users"))[user_index].vector) : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         backgroundColor: `${color}22`,
         borderColor: color,
         pointBackgroundColor: color,
@@ -399,7 +399,7 @@ async function create_plots() {
 }
 async function populate_model() {
     let test = document.getElementById("model");
-    test.src = `data:image/png;base64,${JSON.parse(localStorage.getItem("users"))[user_index].figure}`;
+    test.src = `data:image/png;base64,${JSON.parse(sessionStorage.getItem("users"))[user_index].figure}`;
 }
 load_watch_history();
 create_plots();

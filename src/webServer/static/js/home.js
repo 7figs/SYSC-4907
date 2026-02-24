@@ -6,7 +6,7 @@ load_movies();
 let choose_profile_link = document.getElementById("choose-profile-link");
 let choose_profile_container = document.getElementById("choose-profile-container");
 
-let show_toast = localStorage.getItem("show_toast");
+let show_toast = sessionStorage.getItem("show_toast");
 let toast = document.getElementById("toast");
 
 if (show_toast) {
@@ -22,7 +22,7 @@ if (show_toast) {
     }
     toast.classList.add("toast-show");
     setTimeout(function(){ toast.classList.remove("toast-show") }, 2900);
-    localStorage.removeItem("show_toast");
+    sessionStorage.removeItem("show_toast");
 }
 
 choose_profile_link.addEventListener("click", () => {

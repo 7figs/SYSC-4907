@@ -1,8 +1,8 @@
 async function fetch_movies() {
-    localStorage.removeItem("movies");
+    sessionStorage.removeItem("movies");
     let movies = await fetch("/movies");
     movies = await movies.json();
-    localStorage.setItem("movies", JSON.stringify(movies));
+    sessionStorage.setItem("movies", JSON.stringify(movies));
 }
 
 function deriveKey(password, salt) {

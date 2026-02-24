@@ -31,7 +31,7 @@ color.addEventListener("input", () => {
 async function generate_random_movies() {
     await fetch_movies();
 
-    let users = JSON.parse(localStorage.getItem("users"));
+    let users = JSON.parse(sessionStorage.getItem("users"));
     if (users && users.length > 0) {
         second_panel_back.classList.add("hidden");
         second_panel_redirect.classList.remove("hidden");
@@ -45,8 +45,8 @@ async function generate_random_movies() {
         second_panel.classList.add("hidden");
     }
 
-    movies = JSON.parse(localStorage.getItem("movies"));
-    load_new_randoms = !((localStorage.getItem("random_like")) && (localStorage.getItem("random_dislike")));
+    movies = JSON.parse(sessionStorage.getItem("movies"));
+    load_new_randoms = !((sessionStorage.getItem("random_like")) && (sessionStorage.getItem("random_dislike")));
     let add_movie = true;
     if (load_new_randoms) {
         while (random_like.length < num_options) {
@@ -62,9 +62,9 @@ async function generate_random_movies() {
                 random_like.push(movie);
             }
         }
-        localStorage.removeItem("random_like");
-        localStorage.setItem("random_like", JSON.stringify(random_like));
-        random_like = JSON.parse(localStorage.getItem("random_like"));
+        sessionStorage.removeItem("random_like");
+        sessionStorage.setItem("random_like", JSON.stringify(random_like));
+        random_like = JSON.parse(sessionStorage.getItem("random_like"));
         add_movie = true;
         while (random_dislike.length < num_options) {
             add_movie = true;
@@ -85,12 +85,12 @@ async function generate_random_movies() {
                 random_dislike.push(movie);
             }
         }
-        localStorage.removeItem("random_dislike");
-        localStorage.setItem("random_dislike", JSON.stringify(random_dislike));
+        sessionStorage.removeItem("random_dislike");
+        sessionStorage.setItem("random_dislike", JSON.stringify(random_dislike));
     }
     else {
-        random_like = JSON.parse(localStorage.getItem("random_like"));
-        random_dislike = JSON.parse(localStorage.getItem("random_dislike"));
+        random_like = JSON.parse(sessionStorage.getItem("random_like"));
+        random_dislike = JSON.parse(sessionStorage.getItem("random_dislike"));
     }
 
     for (let i = 0; i < num_options; i++) {
@@ -124,9 +124,9 @@ async function add_eventlisteners() {
         dislike_grid[i].addEventListener("click", () => toggle_selection(dislike_grid[i]));
     }
 
-    if ((localStorage.getItem("likes")) && (localStorage.getItem("dislikes"))) {
-        like_list = JSON.parse(localStorage.getItem("likes"));
-        dislike_list = JSON.parse(localStorage.getItem("dislikes"));
+    if ((sessionStorage.getItem("likes")) && (sessionStorage.getItem("dislikes"))) {
+        like_list = JSON.parse(sessionStorage.getItem("likes"));
+        dislike_list = JSON.parse(sessionStorage.getItem("dislikes"));
 
         for (let i = 0; i < like_grid.length; i++) {
             if (like_list.includes(like_grid[i].children[1].innerText)) {
@@ -153,7 +153,7 @@ async function create_profile() {
         success = true;
         let tree = await fetch(`/tree?l=${JSON.stringify(like_list)}&d=${JSON.stringify(dislike_list)}`);
         tree = await tree.json();
-        let users = localStorage.getItem("users");
+        let users = sessionStorage.getItem("users");
         if (users && users.length > 0) {
             users = JSON.parse(users);
             let user = {
@@ -167,8 +167,8 @@ async function create_profile() {
                 "initial_dislike": dislike_list
             }
             users.push(user);
-            localStorage.removeItem("users");
-            localStorage.setItem("users", JSON.stringify(users));
+            sessionStorage.removeItem("users");
+            sessionStorage.setItem("users", JSON.stringify(users));
         }
         else {
             if (username_input.value != "" && password.value != "") {
@@ -184,8 +184,8 @@ async function create_profile() {
                 }
                 let id = `${username_input.value}`;
                 id = sha256(id);
-                localStorage.setItem("users", JSON.stringify([user]));
-                localStorage.setItem("id", id);
+                sessionStorage.setItem("users", JSON.stringify([user]));
+                sessionStorage.setItem("id", id);
             }
             else {
                 success = false;
@@ -196,14 +196,27 @@ async function create_profile() {
             }
         }
         if (success) {
-            let salt = await fetch("/salt");
-            salt = await salt.json();
-            salt = salt.salt;
-            let user_password = password.value;
-            let key = await deriveKey(user_password, salt);
-            let data = localStorage.getItem("users");
+            let salt;
+            let key;
+            if (sessionStorage.getItem("salt")) {
+                salt = sessionStorage.getItem("salt");
+                key = sessionStorage.getItem("key");
+            }
+            else {
+                salt = await fetch("/salt");
+                salt = await salt.json();
+                salt = salt.salt;
+                let user_password = password.value;
+                key = await deriveKey(user_password, salt);
+                sessionStorage.removeItem("salt");
+                sessionStorage.setItem("salt", salt);
+                sessionStorage.removeItem("key");
+                sessionStorage.setItem("key", key);
+            }
+            
+            let data = sessionStorage.getItem("users");
             let blob = await encryptData(data, key);
-            let id = localStorage.getItem("id");
+            let id = sessionStorage.getItem("id");
             let payload = {
                 id: id,
                 salt: salt,
@@ -217,20 +230,15 @@ async function create_profile() {
                 body: JSON.stringify(payload)
             });
             
-            localStorage.removeItem("salt");
-            localStorage.setItem("salt", salt);
-            localStorage.removeItem("key");
-            localStorage.setItem("key", key);
-
-            localStorage.removeItem("dislikes");
-            localStorage.removeItem("likes");
-            localStorage.removeItem("random_dislike");
-            localStorage.removeItem("random_like");
+            sessionStorage.removeItem("dislikes");
+            sessionStorage.removeItem("likes");
+            sessionStorage.removeItem("random_dislike");
+            sessionStorage.removeItem("random_like");
             let message = {
                 "type": 1,
                 "message": messages.cold_start_success
             }
-            localStorage.setItem("show_toast", JSON.stringify(message));
+            sessionStorage.setItem("show_toast", JSON.stringify(message));
             location.assign("/");
         }
     }
@@ -308,8 +316,8 @@ function toggle_selection(card) {
     }
     like_list = temp_like;
     dislike_list = temp_dislike;
-    localStorage.removeItem("likes");
-    localStorage.removeItem("dislikes");
-    localStorage.setItem("likes", JSON.stringify(like_list));
-    localStorage.setItem("dislikes", JSON.stringify(dislike_list));
+    sessionStorage.removeItem("likes");
+    sessionStorage.removeItem("dislikes");
+    sessionStorage.setItem("likes", JSON.stringify(like_list));
+    sessionStorage.setItem("dislikes", JSON.stringify(dislike_list));
 }

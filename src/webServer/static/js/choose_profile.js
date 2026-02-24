@@ -20,7 +20,7 @@ uploaded_profile.addEventListener("change", function() {
     submit_button.disabled = !this.value;
 });
 
-let profiles = JSON.parse(localStorage.getItem("users"));
+let profiles = JSON.parse(sessionStorage.getItem("users"));
 
 if (profiles) {
     for (let i = 0; i < profiles.length; i++) {
@@ -49,27 +49,6 @@ if (profiles) {
     }
 }
 
-load_data_button.addEventListener("click", async () => {
-    let password_value = password.value;
-    let username_value = username.value;
-    let id = `${username_value}`;
-    id = sha256(id);
-    let data = await fetch(`/load?i=${id}`);
-    data = await data.json();
-    console.log(data)
-    let blob = data[1];
-    let salt = data[0];
-    let key = deriveKey(password_value, salt);
-    let user_data = decryptData(blob, key);
-    localStorage.removeItem("users");
-    localStorage.setItem("users", user_data);
-    localStorage.removeItem("id");
-    localStorage.setItem("id", id);
-    localStorage.removeItem("key");
-    localStorage.setItem("key", key);
-    location.assign("/");
-});
-
 submit_button.addEventListener("click", () => {
     let file = uploaded_profile.files[0];
     let reader = new FileReader();
@@ -85,13 +64,13 @@ submit_button.addEventListener("click", () => {
                 test.id = 0;
             }
             profiles.push(test);
-            localStorage.removeItem("users");
-            localStorage.setItem("users", JSON.stringify(profiles));
+            sessionStorage.removeItem("users");
+            sessionStorage.setItem("users", JSON.stringify(profiles));
             let message = {
                 "type": 1,
                 "message": messages.profile_upload_success
             }
-            localStorage.setItem("show_toast", JSON.stringify(message));
+            sessionStorage.setItem("show_toast", JSON.stringify(message));
             location.assign("/");
         }
         else {
@@ -99,7 +78,7 @@ submit_button.addEventListener("click", () => {
                 "type": 0,
                 "message": messages.profile_upload_fail
             }
-            localStorage.setItem("show_toast", JSON.stringify(message));
+            sessionStorage.setItem("show_toast", JSON.stringify(message));
             window.location.reload();
         }
     });
@@ -131,4 +110,27 @@ load_profiles_button.addEventListener("click", () => {
 
 load_profiles_close.addEventListener("click", () => {
     load_profiles_popup.classList.add("hidden");
+});
+
+load_data_button.addEventListener("click", async () => {
+    let password_value = password.value;
+    let username_value = username.value;
+    let id = `${username_value}`;
+    id = sha256(id);
+    let data = await fetch(`/load?i=${id}`);
+    data = await data.json();
+    console.log(data)
+    let blob = data[1];
+    let salt = data[0];
+    let key = deriveKey(password_value, salt);
+    let user_data = decryptData(blob, key);
+    sessionStorage.removeItem("users");
+    sessionStorage.setItem("users", user_data);
+    sessionStorage.removeItem("id");
+    sessionStorage.setItem("id", id);
+    sessionStorage.removeItem("key");
+    sessionStorage.setItem("key", key);
+    sessionStorage.removeItem("salt");
+    sessionStorage.setItem("salt", salt);
+    location.assign("/");
 });

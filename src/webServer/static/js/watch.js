@@ -4,7 +4,7 @@ let userId;
 let user_index;
 async function load_movies() {
     await fetch_movies();
-    movies = JSON.parse(localStorage.getItem("movies"));
+    movies = JSON.parse(sessionStorage.getItem("movies"));
 }
 
 async function setup_page() {
@@ -41,7 +41,7 @@ async function setup_page() {
     let color;
     let profile_exists = false;
     let movie_exists = false;
-    let profiles = JSON.parse(localStorage.getItem("users"));
+    let profiles = JSON.parse(sessionStorage.getItem("users"));
 
     let movie_index = -1;
 
@@ -169,8 +169,8 @@ async function setup_page() {
         history = [];
         history.unshift(obj);
     }
-    localStorage.removeItem("users");
-    localStorage.setItem("users", JSON.stringify(profiles));
+    sessionStorage.removeItem("users");
+    sessionStorage.setItem("users", JSON.stringify(profiles));
 
     let like_button_solid = document.getElementById("watch-like-icon-select");
     let like_button_regular = document.getElementById("watch-like-icon-deselect");
@@ -216,8 +216,8 @@ async function setup_page() {
                 }
             }
         }
-        localStorage.removeItem("users");
-        localStorage.setItem("users", JSON.stringify(profiles));
+        sessionStorage.removeItem("users");
+        sessionStorage.setItem("users", JSON.stringify(profiles));
     });
 
     dislike_button.addEventListener("click", () => {
@@ -243,14 +243,14 @@ async function setup_page() {
                 }
             }
         }
-        localStorage.removeItem("users");
-        localStorage.setItem("users", JSON.stringify(profiles));
+        sessionStorage.removeItem("users");
+        sessionStorage.setItem("users", JSON.stringify(profiles));
     });
-    let key = localStorage.getItem("key");
-    let data = localStorage.getItem("users");
+    let key = sessionStorage.getItem("key");
+    let data = sessionStorage.getItem("users");
     let blob = await encryptData(data, key);
-    let id = localStorage.getItem("id");
-    let salt = localStorage.getItem("salt");
+    let id = sessionStorage.getItem("id");
+    let salt = sessionStorage.getItem("salt");
     let payload = {
         id: id,
         salt: salt,
@@ -308,7 +308,7 @@ async function play_video() {
         }
     }
 
-    let users = JSON.parse(localStorage.getItem("users"));
+    let users = JSON.parse(sessionStorage.getItem("users"));
     let current_movie = users[user_index].watch_history[0];
     let hasTriggered = false;
 
@@ -317,8 +317,8 @@ async function play_video() {
 
     if (percentage >= 75 && !hasTriggered && current_movie.opinion == "unknown") {
         current_movie.guess = "like";
-        localStorage.removeItem("users");
-        localStorage.setItem("users", JSON.stringify(users));
+        sessionStorage.removeItem("users");
+        sessionStorage.setItem("users", JSON.stringify(users));
         hasTriggered = true;
     }
     });
