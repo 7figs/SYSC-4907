@@ -1,6 +1,8 @@
 {
     "cold_start_success": "&#10003; Success. Profile Created",
-    "cold_start_fail": "&#10005; Error. Please Provide a Username",
+    "cold_start_fail_username": "&#10005; Error. Please provide a Username",
+    "cold_start_fail_like": "&#10005; Error. Please Select At Least 1 Movie You Like",
+    "cold_start_fail_dislike": "&#10005; Error. Please Select At Least 1 Movie You Disike",
     "settings_fail": "&#10005; Error. Please Provide a Username",
     "settings_profile_success": "&#10003; Success. Profile Updated",
     "settings_delete_profile_success": "&#10003; Success. Profile Deleted",

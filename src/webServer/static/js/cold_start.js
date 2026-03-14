@@ -149,7 +149,7 @@ add_eventlisteners();
 
 async function create_profile() {
     let success = false;
-    if (username.value != "") {
+    if (username.value != "" && like_list.length != 0 && dislike_list.length != 0) {
         success = true;
         let tree = await fetch(`/tree?l=${JSON.stringify(like_list)}&d=${JSON.stringify(dislike_list)}`);
         tree = await tree.json();
@@ -243,10 +243,25 @@ async function create_profile() {
         }
     }
     else {
-        toast.innerHTML = messages.cold_start_fail;
-        toast.classList.add("toast-error");
-        toast.classList.add("toast-show");
-        setTimeout(function(){ toast.classList.remove("toast-show") }, 2900);
+        if (username.value == "") {
+            toast.innerHTML = messages.cold_start_fail_username;
+            toast.classList.add("toast-error");
+            toast.classList.add("toast-show");
+            setTimeout(function(){ toast.classList.remove("toast-show") }, 2900);
+        }
+        if (like_list.length == 0) {
+            toast.innerHTML = messages.cold_start_fail_like;
+            toast.classList.add("toast-error");
+            toast.classList.add("toast-show");
+            setTimeout(function(){ toast.classList.remove("toast-show") }, 2900);
+        }
+        if (dislike_list.length == 0) {
+            toast.innerHTML = messages.cold_start_fail_dislike;
+            toast.classList.add("toast-error");
+            toast.classList.add("toast-show");
+            setTimeout(function(){ toast.classList.remove("toast-show") }, 2900);
+        }
+        
     }
 }
 
