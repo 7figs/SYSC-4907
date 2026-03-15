@@ -141,24 +141,27 @@ async function setup_page() {
         }
 
         if (history.length >= 3 && history.length % 3 == 0) {
-            let new_like = profiles[user_index].initial_like;
-            let new_dislike = profiles[user_index].initial_dislike;
+            let new_like = profiles[user_index].initial_like.slice();
+            let new_dislike = profiles[user_index].initial_dislike.slice();
             for (let i = 0; i < history.length - 1; i++) {
                 if (history[i].opinion == "like") {
-                    new_like.push(history[i].id);
+                    new_like.push(Number(history[i].id));
                 }
                 if (history[i].opinion == "dislike") {
-                    new_dislike.push(history[i].id);
+                    new_dislike.push(Number(history[i].id));
                 }
                 if (history[i].opinion == "unknown") {
                     if (history[i].guess == "like") {
-                        new_like.push(history[i].id);
+                        new_like.push(Number(history[i].id));
                     }
                     if (history[i].guess == "dislike") {
-                        new_dislike.push(history[i].id);
+                        new_dislike.push(Number(history[i].id));
                     }
                 }
             }
+            console.log(history)
+            console.log(new_like)
+            console.log(new_dislike)
             let tree = await fetch(`/tree?l=${JSON.stringify(new_like)}&d=${JSON.stringify(new_dislike)}`);
             tree = await tree.json();
             profiles[user_index].tree = tree[0];
@@ -277,25 +280,36 @@ async function play_video() {
     movie_url = movie_url.toLowerCase();
     movie_url = movie_url.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}]+/gu, "");
 
+    console.log(movie_url)
     // Dynamically build the URL based on browser address
     let hostname = window.location.hostname;  // example: 192.168.2.27
     let port = window.location.port || 8000;  // fallback if no port visible
-    let src = `http://144.217.34.146:8000/movies/${movie_url}/stream.m3u8`;
+    let src;
+    if (window.DEMO_MODE) {
+        src = `/static/videos/${movie_url}.mp4`;
+        video.setAttribute("onerror", "this.onerror=null;this.src='../static/videos/PLACEHOLDER.mp4'");
+    }
+    else {
+        src = `http://144.217.34.146:8000/movies/${movie_url}/stream.m3u8`;
+    }
+    
     video.src = src;
 
-    if (Hls.isSupported()) {
-        const hls = new Hls(
-            {
-                maxBufferLength: 100,
-                liveMaxLatencyDuration: 10,
-                backBufferLength: 30,
-                liveSyncDuration: 3
-            }
-        );
-        hls.loadSource(src);
-        hls.attachMedia(video);
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = src;  // Safari native support
+    if (!(window.DEMO_MODE)) {
+        if (Hls.isSupported()) {
+            const hls = new Hls(
+                {
+                    maxBufferLength: 100,
+                    liveMaxLatencyDuration: 10,
+                    backBufferLength: 30,
+                    liveSyncDuration: 3
+                }
+            );
+            hls.loadSource(src);
+            hls.attachMedia(video);
+        } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+            video.src = src;  // Safari native support
+        }
     }
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);

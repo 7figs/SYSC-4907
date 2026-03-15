@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+import argparse
 import sqlite3
 import json
 import sys
@@ -17,33 +18,39 @@ import createUserVector as ml_user_vector
 
 app = Flask(__name__)
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--demo", action="store_true")
+args = parser.parse_args()
+
+DEMO_MODE = args.demo
+
 @app.route("/")
 def home():
-    return render_template("home.html")
+    return render_template("home.html", demo_mode=DEMO_MODE)
 
 @app.route("/start")
 def coldStart():
-    return render_template("coldStart.html")
+    return render_template("coldStart.html", demo_mode=DEMO_MODE)
 
 @app.route("/settings")
 def loadStoreDelete():
-    return render_template("settings.html")
+    return render_template("settings.html", demo_mode=DEMO_MODE)
 
 @app.route("/watch/<id>/<name>")
 def watch(id, name):
-    return render_template("watch.html")
+    return render_template("watch.html", demo_mode=DEMO_MODE)
 
 @app.route("/feed/<id>")
 def feed(id):
-    return render_template("feed.html")
+    return render_template("feed.html", demo_mode=DEMO_MODE)
 
 @app.route("/settings/<id>")
 def settings(id):
-    return render_template("settings.html")
+    return render_template("settings.html", demo_mode=DEMO_MODE)
 
 @app.route("/preview/<id>/<name>")
 def preview(id, name):
-    return render_template("preview.html")
+    return render_template("preview.html", demo_mode=DEMO_MODE)
 
 """
 Endpoints

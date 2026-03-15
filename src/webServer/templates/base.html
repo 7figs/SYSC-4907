@@ -5,9 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title%}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.11.0/src/sha256.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    {% if demo_mode %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css')}}">
+        <script src = "{{ url_for('static', filename='vendor/crypto/sha256.min.js') }}" defer></script>
+        <script src = "{{ url_for('static', filename='vendor/crypto/crypto-js.min.js') }}" defer></script>
+    {% else %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.11.0/src/sha256.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    {% endif %}
     <script src = "{{ url_for('static', filename='js/start.js') }}" defer></script>
     {% block links %}{% endblock %}
 </head>
